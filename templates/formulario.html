@@ -41,6 +41,19 @@
         margin-left: 20px;
         display: none;
     }
+    .fecha-detalle {
+        margin-bottom: 10px;
+        padding: 10px;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        background-color: #f8f9fa;
+    }
+    .fecha-detalle button {
+        margin-left: 10px;
+    }
+    #fechas-seleccionadas-container {
+        margin-top: 20px;
+    }
 </style>
 {% endblock %}
 
@@ -124,10 +137,8 @@
                     </div>
                     
                     <div id="pernoctarOptions" class="ps-4 mb-3" style="display: none;">
-                        <div class="mb-3">
-                            <label for="{{ form.cantidad_personas.id }}" class="form-label">{{ form.cantidad_personas.label.text }}</label>
-                            {{ form.cantidad_personas(class="form-control", type="number", min="1", max="12") }}
-                            <div class="form-text">Máximo 12 personas por noche en total</div>
+                        <div class="alert alert-info" role="alert">
+                            Seleccione las fechas en el calendario y especifique la cantidad de personas para cada fecha. Puede agregar hasta 12 personas por noche en total.
                         </div>
                         
                         <div class="mb-3">
@@ -135,10 +146,15 @@
                             <div class="calendar-container">
                                 <div id="calendar"></div>
                             </div>
-                            <div id="seleccionadas" class="mt-2">
-                                <strong>Fechas seleccionadas:</strong> <span id="fechas-seleccionadas">Ninguna</span>
+                            
+                            <div id="fechas-seleccionadas-container" class="mt-3">
+                                <h5>Fechas seleccionadas:</h5>
+                                <div id="fechas-detalle-container" class="mb-3">
+                                    <div class="text-muted" id="no-fechas-mensaje">Ninguna fecha seleccionada</div>
+                                </div>
+                                
+                                {{ form.fechas_reserva(id="fechas_reserva_input", type="hidden") }}
                             </div>
-                            {{ form.fechas_reserva(id="fechas_reserva_input", type="hidden") }}
                         </div>
                     </div>
                 </div>
@@ -260,6 +276,32 @@
         </form>
     </div>
 </div>
+
+<!-- Modal para agregar/editar cantidad de personas por fecha -->
+<div class="modal fade" id="cantidadPersonasModal" tabindex="-1" aria-labelledby="cantidadPersonasModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cantidadPersonasModalLabel">Cantidad de personas</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="cantidadPersonasForm">
+                    <input type="hidden" id="fecha-modal" value="">
+                    <div class="mb-3">
+                        <label for="cantidad-personas-modal" class="form-label">¿Cuántas personas pernoctarán el <span id="fecha-texto"></span>?</label>
+                        <input type="number" class="form-control" id="cantidad-personas-modal" min="1" max="12" value="1">
+                        <div class="form-text">Máximo 12 personas por noche en total</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="guardar-cantidad">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
@@ -293,6 +335,13 @@
             alojamientoDetalles.style.display = this.checked ? 'block' : 'none';
         });
         
+        // Variables para el modal
+        const cantidadModal = new bootstrap.Modal(document.getElementById('cantidadPersonasModal'));
+        const fechaModalInput = document.getElementById('fecha-modal');
+        const fechaTextoSpan = document.getElementById('fecha-texto');
+        const cantidadModalInput = document.getElementById('cantidad-personas-modal');
+        const guardarCantidadBtn = document.getElementById('guardar-cantidad');
+        
         // Función para formatear fechas YYYY-MM-DD
         function formatearFecha(fecha) {
             const d = new Date(fecha);
@@ -309,11 +358,157 @@
             return `${d.getFullYear()}-${mes}-${dia}`;
         }
         
+        // Función para formatear fecha en formato legible
+        function formatearFechaLegible(fechaStr) {
+            const fecha = new Date(fechaStr);
+            return fecha.toLocaleDateString('es-ES', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+        
+        // Función para actualizar el campo oculto con las fechas y cantidades
+        function actualizarCampoOculto() {
+            const fechasInput = document.getElementById('fechas_reserva_input');
+            fechasInput.value = JSON.stringify(fechasSeleccionadas);
+            console.log("Input value:", fechasInput.value);
+        }
+        
+        // Función para actualizar la visualización de fechas seleccionadas
+        function actualizarVistaFechas() {
+            const container = document.getElementById('fechas-detalle-container');
+            const noFechasMsg = document.getElementById('no-fechas-mensaje');
+            
+            // Limpiar el contenedor
+            container.innerHTML = '';
+            
+            if (fechasSeleccionadas.length === 0) {
+                container.appendChild(noFechasMsg);
+                return;
+            }
+            
+            // Ordenar fechas
+            fechasSeleccionadas.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+            
+            // Crear elementos para cada fecha
+            fechasSeleccionadas.forEach(item => {
+                const divFecha = document.createElement('div');
+                divFecha.className = 'fecha-detalle d-flex justify-content-between align-items-center';
+                
+                const fechaInfo = document.createElement('div');
+                fechaInfo.innerHTML = `<strong>${formatearFechaLegible(item.fecha)}</strong>: ${item.cantidad} personas`;
+                divFecha.appendChild(fechaInfo);
+                
+                const botonesDiv = document.createElement('div');
+                
+                const btnEditar = document.createElement('button');
+                btnEditar.type = 'button';
+                btnEditar.className = 'btn btn-sm btn-outline-primary';
+                btnEditar.textContent = 'Editar';
+                btnEditar.addEventListener('click', () => abrirModalEditar(item.fecha, item.cantidad));
+                
+                const btnEliminar = document.createElement('button');
+                btnEliminar.type = 'button';
+                btnEliminar.className = 'btn btn-sm btn-outline-danger';
+                btnEliminar.textContent = 'Eliminar';
+                btnEliminar.addEventListener('click', () => eliminarFecha(item.fecha));
+                
+                botonesDiv.appendChild(btnEditar);
+                botonesDiv.appendChild(btnEliminar);
+                divFecha.appendChild(botonesDiv);
+                
+                container.appendChild(divFecha);
+            });
+        }
+        
+        // Función para abrir el modal para editar una fecha
+        function abrirModalEditar(fecha, cantidad) {
+            fechaModalInput.value = fecha;
+            fechaTextoSpan.textContent = formatearFechaLegible(fecha);
+            cantidadModalInput.value = cantidad;
+            cantidadModal.show();
+        }
+        
+        // Función para eliminar una fecha
+        function eliminarFecha(fecha) {
+            fechasSeleccionadas = fechasSeleccionadas.filter(item => item.fecha !== fecha);
+            calendar.setDate([]); // Limpiar selecciones del calendario
+            
+            // Volver a marcar las fechas restantes en el calendario
+            fechasSeleccionadas.forEach(item => {
+                calendar.setDate(item.fecha, true);
+            });
+            
+            actualizarVistaFechas();
+            actualizarCampoOculto();
+        }
+        
+        // Manejador de evento para guardar cantidad desde el modal
+        guardarCantidadBtn.addEventListener('click', function() {
+            const fecha = fechaModalInput.value;
+            const cantidad = parseInt(cantidadModalInput.value);
+            
+            if (!fecha || isNaN(cantidad) || cantidad < 1 || cantidad > 12) {
+                alert('Por favor ingrese una cantidad válida (entre 1 y 12)');
+                return;
+            }
+            
+            // Verificar disponibilidad
+            verificarDisponibilidadYGuardar(fecha, cantidad);
+        });
+        
+        // Función para verificar disponibilidad y guardar
+        function verificarDisponibilidadYGuardar(fecha, cantidad) {
+            fetch(`/verificar_disponibilidad?fecha=${fecha}&cantidad=${cantidad}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error en la respuesta del servidor');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.disponible) {
+                        // Actualizar o agregar la fecha con la cantidad específica
+                        const fechaExistente = fechasSeleccionadas.find(item => item.fecha === fecha);
+                        
+                        if (fechaExistente) {
+                            fechaExistente.cantidad = cantidad;
+                        } else {
+                            fechasSeleccionadas.push({
+                                fecha: fecha,
+                                cantidad: cantidad
+                            });
+                        }
+                        
+                        cantidadModal.hide();
+                        actualizarVistaFechas();
+                        actualizarCampoOculto();
+                    } else {
+                        alert(`No hay suficiente disponibilidad para la fecha seleccionada. Disponibles: ${data.disponibles}`);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al verificar disponibilidad:', error);
+                    alert('Error al verificar disponibilidad. Intente de nuevo más tarde.');
+                });
+        }
+        
         // Función para inicializar el calendario
         function initCalendar() {
-            const cantidadInput = document.getElementById('{{ form.cantidad_personas.id }}');
             const fechasInput = document.getElementById('fechas_reserva_input');
-            const fechasSeleccionadasSpan = document.getElementById('fechas-seleccionadas');
+            
+            // Intentar recuperar datos previos
+            try {
+                if (fechasInput.value) {
+                    fechasSeleccionadas = JSON.parse(fechasInput.value);
+                    actualizarVistaFechas();
+                }
+            } catch (e) {
+                console.error('Error al parsear fechas guardadas:', e);
+                fechasSeleccionadas = [];
+            }
             
             // Enfoque simplificado: usar directamente flatpickr para manejo de fechas
             calendar = flatpickr('#calendar', {
@@ -323,57 +518,52 @@
                 locale: 'es',
                 inline: true,
                 onChange: function(selectedDates, dateStr, instance) {
-                    // Directamente actualizamos nuestras fechas seleccionadas
-                    fechasSeleccionadas = selectedDates.map(date => formatearFecha(date));
-                    
-                    // Actualizar el campo oculto
-                    fechasInput.value = fechasSeleccionadas.join(',');
-                    
-                    // Actualizar el texto visible
-                    fechasSeleccionadasSpan.textContent = fechasSeleccionadas.length > 0 
-                        ? fechasSeleccionadas.join(', ') 
-                        : 'Ninguna';
-                    
-                    console.log("Fechas seleccionadas:", fechasSeleccionadas);
-                    console.log("Input value:", fechasInput.value);
+                    if (selectedDates.length > 0) {
+                        const fechasActuales = selectedDates.map(date => formatearFecha(date));
+                        const fechasGuardadas = fechasSeleccionadas.map(item => item.fecha);
+                        const nuevasFechas = fechasActuales.filter(f => !fechasGuardadas.includes(f));
+                        
+                        if (nuevasFechas.length > 0) {
+                            const nuevaFecha = nuevasFechas[0];
+                            abrirModalEditar(nuevaFecha, 1);
+                        }
+                        
+                        const fechasEliminadas = fechasGuardadas.filter(f => !fechasActuales.includes(f));
+                        if (fechasEliminadas.length > 0) {
+                            fechasEliminadas.forEach(fecha => {
+                                fechasSeleccionadas = fechasSeleccionadas.filter(item => item.fecha !== fecha);
+                            });
+                            actualizarVistaFechas();
+                            actualizarCampoOculto();
+                        }
+                    } else {
+                        fechasSeleccionadas = [];
+                        actualizarVistaFechas();
+                        actualizarCampoOculto();
+                    }
                 }
             });
             
-            // Intentamos cargar la disponibilidad inicial para las fechas
+            if (fechasSeleccionadas.length > 0) {
+                const fechas = fechasSeleccionadas.map(item => item.fecha);
+                calendar.setDate(fechas);
+            }
+            
             setTimeout(() => {
                 const diasVisibles = document.querySelectorAll('.flatpickr-day');
                 diasVisibles.forEach(dia => {
                     if (dia.getAttribute('aria-label')) {
                         try {
                             const fechaStr = formatearFecha(dia.getAttribute('aria-label'));
-                            cargarDisponibilidad(fechaStr, parseInt(cantidadInput.value) || 1, dia);
+                            cargarDisponibilidad(fechaStr, 1, dia);
                         } catch (e) {
                             console.error('Error al formatear fecha:', e);
                         }
                     }
                 });
             }, 500);
-            
-            // Cuando cambie la cantidad de personas, actualizar la información de disponibilidad
-            cantidadInput.addEventListener('change', function() {
-                const cantidad = parseInt(this.value) || 1;
-                
-                // Actualizar disponibilidad para todas las fechas visibles
-                const diasVisibles = document.querySelectorAll('.flatpickr-day');
-                diasVisibles.forEach(dia => {
-                    if (dia.getAttribute('aria-label')) {
-                        try {
-                            const fechaStr = formatearFecha(dia.getAttribute('aria-label'));
-                            cargarDisponibilidad(fechaStr, cantidad, dia);
-                        } catch (e) {
-                            console.error('Error al formatear fecha:', e);
-                        }
-                    }
-                });
-            });
         }
         
-        // Función para cargar información de disponibilidad
         function cargarDisponibilidad(fecha, cantidad, diaElemento) {
             fetch(`/verificar_disponibilidad?fecha=${fecha}&cantidad=${cantidad}`)
                 .then(response => {
@@ -383,7 +573,6 @@
                     return response.json();
                 })
                 .then(data => {
-                    // Añadir indicador de disponibilidad
                     let infoElement = diaElemento.querySelector('.disponibilidad-info');
                     if (!infoElement) {
                         infoElement = document.createElement('span');
@@ -391,18 +580,12 @@
                         diaElemento.appendChild(infoElement);
                     }
                     
-                    // Mostrar lugares disponibles
                     const disponibles = data.disponibles || 0;
                     infoElement.textContent = disponibles;
                     
-                    // Aplicar clases según disponibilidad
-                    if (disponibles < cantidad) {
+                    if (disponibles < 1) {
                         diaElemento.classList.add('no-disponible');
                         diaElemento.classList.remove('disponible');
-                        // Si la fecha está seleccionada pero ya no hay disponibilidad, la deseleccionamos
-                        if (calendar.selectedDates.some(d => formatearFecha(d) === fecha)) {
-                            calendar.removeDate(new Date(fecha));
-                        }
                     } else {
                         diaElemento.classList.add('disponible');
                         diaElemento.classList.remove('no-disponible');
@@ -410,13 +593,11 @@
                 })
                 .catch(error => {
                     console.error('Error al verificar disponibilidad:', error);
-                    // En caso de error, asumimos que hay disponibilidad
                     diaElemento.classList.add('disponible');
                     diaElemento.classList.remove('no-disponible');
                 });
         }
         
-        // Comprobar estados iniciales de los checkboxes
         if (pernoctarCheck.checked) {
             pernoctarOptions.style.display = 'block';
             calendarContainer.style.display = 'block';
@@ -428,45 +609,37 @@
             alojamientoDetalles.style.display = 'block';
         }
 
-        // Función para mostrar/ocultar campos de detalle
         function checkInitialOtroSelections() {
-            // Verificar selección inicial para sitio "otro"
             const sitioOtroCheck = document.getElementById('sitio_otro');
             if (sitioOtroCheck && sitioOtroCheck.checked) {
                 document.getElementById('detalleSitioOtro').style.display = 'block';
             }
             
-            // Verificar selección inicial para infraestructura "otra"
             const infraOtraCheck = document.getElementById('infra_otra');
             if (infraOtraCheck && infraOtraCheck.checked) {
                 document.getElementById('detalleInfraOtra').style.display = 'block';
             }
             
-            // Verificar selección inicial para finalidad "otro"
             const finalidadOtroCheck = document.getElementById('finalidad_otro');
             if (finalidadOtroCheck && finalidadOtroCheck.checked) {
                 document.getElementById('detalleFinalidadOtro').style.display = 'block';
             }
         }
         
-        // Comprobar selección inicial de finalidad "otro"
         const finalidadSelect = document.getElementById('{{ form.finalidad.id }}');
         if (finalidadSelect && finalidadSelect.value === 'otro') {
             document.getElementById('detalleFinalidadOtro').style.display = 'block';
         }
         
-        // Comprobar selección inicial de opciones "otro"
         checkInitialOtroSelections();
     });
     
-    // Función para mostrar/ocultar campos de detalle cuando se selecciona/deselecciona "otro"
     function toggleDetalleOtro(checkbox, detalleId) {
         const detalleElement = document.getElementById(detalleId);
         if (checkbox.checked) {
             detalleElement.style.display = 'block';
         } else {
             detalleElement.style.display = 'none';
-            // Limpiar el campo cuando se deselecciona
             const inputField = detalleElement.querySelector('input');
             if (inputField) {
                 inputField.value = '';
@@ -474,14 +647,12 @@
         }
     }
     
-    // Función para mostrar/ocultar campo de detalle cuando se cambia la finalidad
     function toggleFinalidadOtro(selectElement) {
         const detalleElement = document.getElementById('detalleFinalidadOtro');
         if (selectElement.value === 'otro') {
             detalleElement.style.display = 'block';
         } else {
             detalleElement.style.display = 'none';
-            // Limpiar el campo cuando se selecciona otra opción
             document.getElementById('finalidad_otro_detalle').value = '';
         }
     }

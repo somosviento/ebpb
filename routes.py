@@ -1,6 +1,7 @@
 from flask import render_template, redirect, url_for, flash, request, jsonify, abort
 from datetime import datetime
 import os
+import json
 from __init__ import db
 from models import Reservation, FechaReservada, User
 from forms import ReservationForm, LoginForm, RegistrationForm
@@ -61,24 +62,43 @@ def init_routes(app):
                 direccion_postal=form.direccion_postal.data
             )
             
-            # Guardar fechas reservadas
+            # Guardar fechas reservadas con diferentes cantidades por fecha
             if form.pernoctar.data and form.fechas_reserva.data:
-                for fecha_str in form.fechas_reserva.data.split(','):
-                    fecha = datetime.strptime(fecha_str, '%Y-%m-%d').date()
-                    cantidad = int(form.cantidad_personas.data)
-                    # Verificar disponibilidad antes de guardar
-                    disponibilidad = FechaReservada.verificar_disponibilidad(fecha, cantidad)
-                    if not disponibilidad['disponible']:
-                        flash(f'No hay suficiente disponibilidad para la fecha {fecha_str}', 'danger')
+                try:
+                    fechas_data = json.loads(form.fechas_reserva.data)
+                    
+                    if not fechas_data:
+                        flash('Debe seleccionar al menos una fecha para pernoctar', 'danger')
                         return render_template('formulario.html', form=form, now=datetime.now())
                     
-                    # Guardar la fecha reservada
-                    fecha_reservada = FechaReservada(
-                        reserva=reservation,
-                        fecha=fecha,
-                        cantidad_personas=cantidad
-                    )
-                    db.session.add(fecha_reservada)
+                    for fecha_item in fechas_data:
+                        fecha_str = fecha_item.get('fecha')
+                        cantidad = fecha_item.get('cantidad', 1)
+                        
+                        if not fecha_str or not cantidad:
+                            continue
+                            
+                        fecha = datetime.strptime(fecha_str, '%Y-%m-%d').date()
+                        
+                        # Verificar disponibilidad antes de guardar
+                        disponibilidad = FechaReservada.verificar_disponibilidad(fecha, cantidad)
+                        if not disponibilidad['disponible']:
+                            flash(f'No hay suficiente disponibilidad para la fecha {fecha_str}', 'danger')
+                            return render_template('formulario.html', form=form, now=datetime.now())
+                        
+                        # Guardar la fecha reservada
+                        fecha_reservada = FechaReservada(
+                            reserva=reservation,
+                            fecha=fecha,
+                            cantidad_personas=cantidad
+                        )
+                        db.session.add(fecha_reservada)
+                except json.JSONDecodeError:
+                    flash('Error en el formato de las fechas seleccionadas', 'danger')
+                    return render_template('formulario.html', form=form, now=datetime.now())
+                except Exception as e:
+                    flash(f'Error al procesar las fechas: {str(e)}', 'danger')
+                    return render_template('formulario.html', form=form, now=datetime.now())
             
             db.session.add(reservation)
             db.session.commit()

@@ -86,23 +86,52 @@
             </div>
             
             {% if reserva.pernoctar and reserva.fechas_reservadas %}
-            <h5>Fechas Reservadas</h5>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Fecha</th>
-                        <th>Cantidad de Personas</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for fecha in reserva.fechas_reservadas %}
-                    <tr>
-                        <td>{{ fecha.fecha.strftime('%d/%m/%Y') }}</td>
-                        <td>{{ fecha.cantidad_personas }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            <div class="row">
+                <div class="col-md-8">
+                    <h5>Fechas Reservadas</h5>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Día</th>
+                                    <th class="text-center">Cantidad de Personas</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% set total_personas = 0 %}
+                                {% set fechas_ordenadas = reserva.fechas_reservadas|sort(attribute='fecha') %}
+                                {% for fecha in fechas_ordenadas %}
+                                {% set total_personas = total_personas + fecha.cantidad_personas %}
+                                <tr>
+                                    <td>{{ fecha.fecha.strftime('%d/%m/%Y') }}</td>
+                                    <td>{{ fecha.fecha.strftime('%A')|capitalize }}</td>
+                                    <td class="text-center">
+                                        <span class="badge bg-primary">{{ fecha.cantidad_personas }}</span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                <tr class="table-secondary">
+                                    <th colspan="2" class="text-end">Total personas-noche:</th>
+                                    <td class="text-center"><strong>{{ total_personas }}</strong></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card mt-3">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Resumen</h5>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Noches totales:</strong> {{ fechas_ordenadas|length }}</p>
+                            <p><strong>Personas-noche:</strong> {{ total_personas }}</p>
+                            <p><strong>Promedio:</strong> {{ (total_personas / fechas_ordenadas|length)|round(1) }} personas/noche</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
             {% endif %}
             
             <div class="row mt-4">

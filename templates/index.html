@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Inicio - Estación Biológica Puerto Blest{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h2 class="card-title mb-0">Bienvenido a la Estación Biológica Puerto Blest</h2>
+            </div>
+            <div class="card-body">
+                <p class="lead">
+                    La Estación Biológica Puerto Blest es un centro de investigación y educación ambiental situado en un entorno natural privilegiado.
+                </p>
+                
+                <p>
+                    Si desea reservar una visita o estancia en nuestras instalaciones, por favor complete el formulario de reserva.
+                </p>
+                
+                <div class="text-center mt-4">
+                    <a href="{{ url_for('formulario') }}" class="btn btn-primary btn-lg">Ir al formulario de reserva</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -4,6 +4,10 @@ from werkzeug.security import generate_password_hash
 import os
 import sys
 from flask_migrate import Migrate
+from dotenv import load_dotenv
+
+# Cargar variables de entorno
+load_dotenv()
 
 # Crear la aplicación
 app = create_app()
@@ -18,9 +22,9 @@ def setup_database():
         admin = User.query.filter_by(is_admin=True).first()
         if not admin:
             print("Creando usuario administrador predeterminado...")
-            username = input("Nombre de usuario: ")
-            email = input("Email: ")
-            password = input("Contraseña: ")
+            username = os.environ.get('DEFAULT_ADMIN_USERNAME') or input("Nombre de usuario: ")
+            email = os.environ.get('DEFAULT_ADMIN_EMAIL') or input("Email: ")
+            password = os.environ.get('DEFAULT_ADMIN_PASSWORD') or input("Contraseña: ")
             
             # Crear usuario administrador
             admin = User(

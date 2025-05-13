@@ -339,9 +339,6 @@ document.addEventListener('DOMContentLoaded', function() {
     $(function() {
         console.log("jQuery está listo, inicializando eventos...");
         
-        // Agregar debug para el botón cancelar
-        console.log("Botón cancelar:", $('#cancelButton').length > 0 ? "Encontrado" : "No encontrado");
-        
         // Cambiar campos según tipo de reserva
         $('input[name="reservation_type"]').change(function() {
             if ($(this).val() === 'catedra') {
@@ -351,19 +348,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 $('#catedraFields').hide();
                 $('#equipoFields').show();
             }
-        });        // Inicializar selector de fechas
+        });
+
+        // Inicializar selector de fechas
         $('.date-picker').flatpickr({
             minDate: "today",
             dateFormat: "Y-m-d"
         });
-        
-        // Asegurarnos de que initConfirmations esté inicializado para manejar los eventos de confirmación
-        if (typeof initConfirmations === 'function') {
-            console.log("Inicializando manejadores de confirmación...");
-            initConfirmations();
-        } else {
-            console.error("El script confirmation.js no se ha cargado correctamente");
-        }
 
         // ===== BOTÓN AGREGAR FECHA =====
         // Usar click directo en vez de delegación para el botón principal de agregar
@@ -403,9 +394,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 minDate: "today",
                 dateFormat: "Y-m-d"
             });
-        });        // ===== ELIMINAR FECHA =====
-        // Nota: Este evento se maneja ahora en confirmation.js 
-        // para mostrar el modal de confirmación antes de eliminar
+        });
+
+        // ===== ELIMINAR FECHA =====
+        $(document).on('click', '.remove-date', function() {
+            console.log("Botón eliminar fecha clickeado");
+            // Si hay más de una fecha, elimina la entrada
+            if ($('.date-entry').length > 1) {
+                $(this).closest('.date-entry').fadeOut(300, function() {
+                    $(this).remove();
+                });
+            } else {
+                // Mostrar mensaje si es la única fecha
+                alert('Debe haber al menos una fecha de reserva');
+            }
+        });
 
         // ===== AGREGAR PARTICIPANTE =====
         $('#add-participant').on('click', function() {
@@ -465,14 +468,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             `;
             $('#participants-container').append(participantHtml);
-        });        /* 
-        // Esta función se ha trasladado a confirmation.js para usar el modal de confirmación
+        });
+
         // ===== ELIMINAR PARTICIPANTE =====
         $(document).on('click', '.remove-participant', function() {
             console.log("Botón eliminar participante clickeado");
-            // En lugar de eliminar directamente, se mostrará un modal de confirmación desde confirmation.js
+            $(this).closest('.participant-entry').fadeOut(300, function() {
+                $(this).remove();
+            });
         });
-        */
 
         // ===== VERIFICAR DISPONIBILIDAD =====
         $(document).on('change', '.date-picker, .num-people', function() {

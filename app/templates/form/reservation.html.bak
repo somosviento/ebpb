@@ -123,8 +123,7 @@
                 </div>
             </div>
 
-            <!-- Datos específicos según tipo -->
-            <div class="form-section" id="catedraFields">
+            <!-- Datos específicos según tipo -->            <div class="form-section" id="catedraFields">
                 <h4 class="form-section-title">
                     <i class="bi bi-book"></i>
                     Información de la Cátedra
@@ -145,9 +144,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <div class="form-section" id="equipoFields" style="display: none;">
+            </div>            <div class="form-section" id="equipoFields" style="display: none;">
                 <h4 class="form-section-title">
                     <i class="bi bi-folder-check"></i>
                     Información del Proyecto
@@ -175,9 +172,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- Fechas de reserva -->
+            </div>            <!-- Fechas de reserva -->
             <div class="form-section">
                 <h4 class="form-section-title">
                     <i class="bi bi-calendar-event"></i> 
@@ -192,9 +187,7 @@
                             <p class="mb-0 small">La Estación tiene capacidad máxima para <strong>12 personas</strong> por noche.</p>
                         </div>
                     </div>
-                </div>
-
-                <div id="dates-container" class="mt-4">
+                </div>                  <div id="dates-container" class="mt-4">
                     <div class="date-entry">
                         <div class="row g-3">
                             <div class="col-md-6">
@@ -225,9 +218,7 @@
                         <i class="bi bi-plus-circle me-2"></i> Agregar fecha
                     </button>
                 </div>
-            </div>
-
-            <!-- Participantes -->
+            </div>            <!-- Participantes -->
             <div class="form-section">
                 <h4 class="form-section-title">
                     <i class="bi bi-people"></i> 
@@ -252,9 +243,7 @@
                 <button type="button" class="btn btn-outline-primary btn-sm" id="add-participant">
                     <i class="bi bi-person-plus me-2"></i> Agregar participante
                 </button>
-            </div>
-
-            <!-- Información adicional -->
+            </div>            <!-- Información adicional -->
             <div class="form-section">
                 <h4 class="form-section-title">
                     <i class="bi bi-file-text"></i>
@@ -285,9 +274,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <div class="form-section mt-4 text-center">
+            </div>            <div class="form-section mt-4 text-center">
                 <div class="alert alert-light border-0 bg-light bg-opacity-50 mb-4">
                     <div class="d-flex">
                         <div class="me-3 text-primary">
@@ -339,9 +326,6 @@ document.addEventListener('DOMContentLoaded', function() {
     $(function() {
         console.log("jQuery está listo, inicializando eventos...");
         
-        // Agregar debug para el botón cancelar
-        console.log("Botón cancelar:", $('#cancelButton').length > 0 ? "Encontrado" : "No encontrado");
-        
         // Cambiar campos según tipo de reserva
         $('input[name="reservation_type"]').change(function() {
             if ($(this).val() === 'catedra') {
@@ -351,19 +335,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 $('#catedraFields').hide();
                 $('#equipoFields').show();
             }
-        });        // Inicializar selector de fechas
+        });
+
+        // Inicializar selector de fechas
         $('.date-picker').flatpickr({
             minDate: "today",
             dateFormat: "Y-m-d"
         });
-        
-        // Asegurarnos de que initConfirmations esté inicializado para manejar los eventos de confirmación
-        if (typeof initConfirmations === 'function') {
-            console.log("Inicializando manejadores de confirmación...");
-            initConfirmations();
-        } else {
-            console.error("El script confirmation.js no se ha cargado correctamente");
-        }
 
         // ===== BOTÓN AGREGAR FECHA =====
         // Usar click directo en vez de delegación para el botón principal de agregar
@@ -395,7 +373,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                 </div>
             `;
-            
             $('#dates-container').append(dateEntry);
             
             // Reinicializar date picker para el nuevo campo
@@ -403,14 +380,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 minDate: "today",
                 dateFormat: "Y-m-d"
             });
-        });        // ===== ELIMINAR FECHA =====
-        // Nota: Este evento se maneja ahora en confirmation.js 
-        // para mostrar el modal de confirmación antes de eliminar
-
-        // ===== AGREGAR PARTICIPANTE =====
-        $('#add-participant').on('click', function() {
-            console.log("Botón agregar participante clickeado");
-            
+        });        // Agregar funcionalidad para eliminar fechas
+        $(document).on('click', '.remove-date', function() {
+            // Si hay más de una fecha, elimina la entrada
+            if ($('.date-entry').length > 1) {
+                $(this).closest('.date-entry').fadeOut(300, function() {
+                    $(this).remove();
+                });
+            } else {
+                // Mostrar mensaje si es la única fecha
+                alert('Debe haber al menos una fecha de reserva');
+            }
+        });
+        
+        // Agregar participante
+        $('#add-participant').click(function() {
             const participantHtml = `
                 <div class="participant-entry">
                     <div class="d-flex justify-content-between align-items-center mb-2">
@@ -465,16 +449,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             `;
             $('#participants-container').append(participantHtml);
-        });        /* 
-        // Esta función se ha trasladado a confirmation.js para usar el modal de confirmación
-        // ===== ELIMINAR PARTICIPANTE =====
+        });        // Agregar funcionalidad para eliminar participantes
         $(document).on('click', '.remove-participant', function() {
-            console.log("Botón eliminar participante clickeado");
-            // En lugar de eliminar directamente, se mostrará un modal de confirmación desde confirmation.js
-        });
-        */
-
-        // ===== VERIFICAR DISPONIBILIDAD =====
+            $(this).closest('.participant-entry').fadeOut(300, function() {
+                $(this).remove();
+            });
+        });        // ===== VERIFICAR DISPONIBILIDAD =====
         $(document).on('change', '.date-picker, .num-people', function() {
             const dateEntry = $(this).closest('.date-entry');
             const dateField = dateEntry.find('.date-picker');
@@ -523,6 +503,5 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-});
 </script>
 {% endblock %}

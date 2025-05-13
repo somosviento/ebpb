@@ -1,36 +1,10 @@
 // Función para inicializar todas las confirmaciones de acciones destructivas
 function initConfirmations() {
-    // Para botones o enlaces con el atributo data-confirm="true"
-    document.addEventListener('click', function(event) {
-        const target = event.target.closest('[data-confirm="true"]');
-        if (target) {
-            event.preventDefault();
-            
-            const message = target.getAttribute('data-confirm-message') || '¿Estás seguro que deseas realizar esta acción?';
-            const title = target.getAttribute('data-confirm-title') || 'Confirmar acción';
-            const confirmText = target.getAttribute('data-confirm-text') || 'Confirmar';
-            const cancelText = target.getAttribute('data-confirm-cancel-text') || 'Cancelar';
-            const confirmBtnClass = target.getAttribute('data-confirm-btn-class') || 'btn-danger';
-            
-            showConfirmationModal(title, message, function() {
-                // Si es un botón de submit dentro de un formulario
-                if (target.tagName === 'BUTTON' && target.type === 'submit') {
-                    target.closest('form').submit();
-                } 
-                // Si es un enlace, redirigimos
-                else if (target.tagName === 'A') {
-                    window.location.href = target.href;
-                }
-                // Si tiene un callback personalizado
-                else if (target.hasAttribute('data-confirm-callback')) {
-                    const callbackName = target.getAttribute('data-confirm-callback');
-                    if (typeof window[callbackName] === 'function') {
-                        window[callbackName](target);
-                    }
-                }
-            }, confirmText, cancelText, confirmBtnClass);
-        }
-    });
+    // Eliminar cualquier listener previo para evitar duplicidades
+    document.removeEventListener('click', handleConfirmClick);
+    
+    // Agregar un único listener para manejar los eventos de confirmación
+    document.addEventListener('click', handleConfirmClick);
 
     // Inicializa los botones de eliminar fecha que ya tienen su propio comportamiento
     initRemoveDateButtons();
@@ -39,17 +13,80 @@ function initConfirmations() {
     initRemoveParticipantButtons();
 }
 
+// Separar el handler de click para mejor organización y para poder removerlo si es necesario
+function handleConfirmClick(event) {
+    const target = event.target.closest('[data-confirm="true"]');
+    if (target) {
+        // Prevenir navegación o submit por defecto
+        event.preventDefault();
+        event.stopPropagation();
+        
+        // Evitar doble ejecución
+        if (target.dataset.processing === 'true') {
+            console.log('Evitando doble procesamiento de confirmación');
+            return;
+        }
+        
+        // Marcar que estamos procesando este elemento
+        target.dataset.processing = 'true';
+        
+        const message = target.getAttribute('data-confirm-message') || '¿Estás seguro que deseas realizar esta acción?';
+        const title = target.getAttribute('data-confirm-title') || 'Confirmar acción';
+        const confirmText = target.getAttribute('data-confirm-text') || 'Confirmar';
+        const cancelText = target.getAttribute('data-confirm-cancel-text') || 'Cancelar';
+        const confirmBtnClass = target.getAttribute('data-confirm-btn-class') || 'btn-danger';
+        
+        showConfirmationModal(title, message, function() {
+            // Si es un botón de submit dentro de un formulario
+            if (target.tagName === 'BUTTON' && target.type === 'submit') {
+                target.closest('form').submit();
+            } 
+            // Si es un enlace, redirigimos
+            else if (target.tagName === 'A') {
+                window.location.href = target.href;
+            }
+            // Si tiene un callback personalizado
+            else if (target.hasAttribute('data-confirm-callback')) {
+                const callbackName = target.getAttribute('data-confirm-callback');
+                if (typeof window[callbackName] === 'function') {
+                    window[callbackName](target);
+                }
+            }
+            // Limpiar el flag de procesamiento cuando termina
+            target.dataset.processing = 'false';
+        }, confirmText, cancelText, confirmBtnClass);
+        
+        // En caso de cancelación, limpiar el flag
+        setTimeout(() => {
+            if (target.dataset.processing === 'true') {
+                target.dataset.processing = 'false';
+            }
+        }, 500);
+    }
+}
+
+// Variable para rastrear si ya hay un modal activo
+let activeModalId = null;
+
 // Función para mostrar el modal de confirmación
 function showConfirmationModal(title, message, onConfirm, confirmText, cancelText, confirmBtnClass) {
+    // Si ya hay un modal activo con el mismo título y mensaje, no crear uno nuevo
+    // Esto evita la duplicación de modales
+    if (activeModalId) {
+        console.log('Ya existe un modal activo, evitando duplicación');
+        return;
+    }
+    
     // Crear elementos del modal
     const modalId = 'confirmationModal' + Math.random().toString(36).substring(2);
+    activeModalId = modalId;
     
     let modalFooter = '';
     if (cancelText) {
         // Si hay un texto de cancelación, mostramos ambos botones
         modalFooter = `
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">${cancelText}</button>
+                <button type="button" class="btn btn-secondary modal-cancel-btn" data-bs-dismiss="modal">${cancelText}</button>
                 <button type="button" class="btn ${confirmBtnClass}" id="${modalId}ConfirmBtn">${confirmText}</button>
             </div>
         `;
@@ -88,15 +125,23 @@ function showConfirmationModal(title, message, onConfirm, confirmText, cancelTex
     const confirmBtn = document.getElementById(`${modalId}ConfirmBtn`);
     
     // Configurar eventos
-    confirmBtn.addEventListener('click', function() {
-        modal.hide();
-        if (typeof onConfirm === 'function') {
-            onConfirm();
-        }
-    });
+    if (confirmBtn) {
+        confirmBtn.addEventListener('click', function() {
+            modal.hide();
+            if (typeof onConfirm === 'function') {
+                setTimeout(() => {
+                    onConfirm();
+                }, 100);
+            }
+        });
+    }
     
+    // Limpiar el registro del modal activo cuando se cierra
     modalElement.addEventListener('hidden.bs.modal', function() {
-        modalElement.remove();
+        activeModalId = null;
+        setTimeout(() => {
+            modalElement.remove();
+        }, 150);
     });
     
     // Mostrar el modal
@@ -142,7 +187,8 @@ function initRemoveParticipantButtons() {
     $(document).off('click', '.remove-participant');
     
     // Agrega el nuevo comportamiento
-    $(document).on('click', '.remove-participant', function() {
+    $(document).on('click', '.remove-participant', function(e) {
+        e.preventDefault(); // Prevenir comportamiento por defecto
         const participantEntry = $(this).closest('.participant-entry');
         const participantName = participantEntry.find('input[name="participant_name[]"]').val() || 'este participante';
         
@@ -150,7 +196,9 @@ function initRemoveParticipantButtons() {
             'Eliminar participante', 
             `¿Está seguro que desea eliminar a ${participantName}?`, 
             function() {
-                participantEntry.remove();
+                participantEntry.fadeOut(300, function() {
+                    $(this).remove();
+                });
             },
             'Eliminar',
             'Cancelar',
@@ -170,4 +218,20 @@ function showCustomAlert(message) {
 }
 
 // Inicializar cuando el DOM esté listo
-document.addEventListener('DOMContentLoaded', initConfirmations);
+// Usar una sola inicialización cuando el DOM está listo
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Inicializando confirmation.js (DOMContentLoaded)');
+        if (!window.confirmationsInitialized) {
+            window.confirmationsInitialized = true;
+            initConfirmations();
+        }
+    });
+} else {
+    // Si el DOM ya está cargado, inicializar inmediatamente
+    console.log('Inicializando confirmation.js (DOM ya cargado)');
+    if (!window.confirmationsInitialized) {
+        window.confirmationsInitialized = true;
+        initConfirmations();
+    }
+}

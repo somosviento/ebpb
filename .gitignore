@@ -1,4 +1,4 @@
-# Archivos de Python
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
@@ -24,7 +24,14 @@ var/
 venv/
 ENV/
 
-# Archivos de base de datos SQLite (opcional, depende si quieres subir tu base de datos)
+# Flask
+instance/
+.webassets-cache
+
+# Archivos de base de datos SQLite
+*.db
+*.sqlite
+*.sqlite3
 # instance/ebpb.db
 
 # Archivos generados
@@ -43,3 +50,7 @@ Thumbs.db
 .vscode/
 *.swp
 *.swo
+
+# Uploaded files
+uploads/*
+!uploads/.gitkeep

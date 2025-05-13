@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}Calendario de Reservas - Administración{% endblock %}
+
+{% block extra_css %}
+<!-- FullCalendar v5 CSS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.11.5/main.min.css" rel="stylesheet">
+<style>
+    .fc-event {
+        cursor: pointer;
+    }
+    #loading-indicator {
+        display: none;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1000;
+    }
+    .calendar-wrapper {
+        position: relative;
+        min-height: 500px;
+    }
+    .calendar-legend {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .legend-color {
+        width: 1rem;
+        height: 1rem;
+        border-radius: 3px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Calendario de Reservas</li>
+        </ol>
+    </nav>
+    
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Calendario de Reservas</h4>
+        </div>
+        <div class="card-body">
+            <div class="calendar-legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #28a745"></div>
+                    <span>Baja ocupación (&lt;50%)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #ffc107"></div>
+                    <span>Media ocupación (50-89%)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #dc3545"></div>
+                    <span>Alta ocupación (≥90%)</span>
+                </div>
+            </div>
+            <div class="calendar-wrapper">
+                <div id="loading-indicator" class="text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                </div>
+                <div id="calendar"></div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">Volver al Dashboard</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- FullCalendar v5 JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.11.5/main.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.11.5/locales/es.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Definir los eventos usando Jinja antes de la configuración del calendario
+        var calendarEvents = [];
+        {% if eventos is defined %}
+            calendarEvents = [
+                {% for evento in eventos %}
+                {
+                    title: "{{ evento.title }}",
+                    start: "{{ evento.start }}",
+                    url: "{{ evento.url }}",
+                    backgroundColor: "{{ evento.backgroundColor|default('#007bff') }}",
+                    borderColor: "{{ evento.borderColor|default('#007bff') }}",
+                    textColor: '#ffffff'
+                }{% if not loop.last %},{% endif %}
+                {% endfor %}
+            ];
+        {% endif %}
+        
+        const loadingIndicator = document.getElementById('loading-indicator');
+        var calendarEl = document.getElementById('calendar');
+        
+        // Mostrar indicador de carga
+        loadingIndicator.style.display = 'block';
+        
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            locale: 'es',
+            loading: function(isLoading) {
+                loadingIndicator.style.display = isLoading ? 'block' : 'none';
+            },
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            events: calendarEvents
+        });
+        
+        calendar.render();
+    });
+</script>
+{% endblock %}

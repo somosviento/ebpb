@@ -1,0 +1,660 @@
+{% extends 'base.html' %}
+
+{% block title %}Formulario de Reserva - Estación Biológica Puerto Blest{% endblock %}
+
+{% block extra_css %}
+<style>
+    .calendar-container {
+        margin-top: 20px;
+        margin-bottom: 20px;
+        display: none;
+    }
+    .calendar-day {
+        position: relative;
+    }
+    .calendar-day.disponible {
+        background-color: rgba(40, 167, 69, 0.2);
+        cursor: pointer;
+    }
+    .calendar-day.no-disponible {
+        background-color: rgba(220, 53, 69, 0.2);
+        cursor: not-allowed;
+    }
+    .calendar-day.seleccionado {
+        background-color: rgba(0, 123, 255, 0.4);
+        font-weight: bold;
+    }
+    .disponibilidad-info {
+        font-size: 10px;
+        position: absolute;
+        bottom: 2px;
+        right: 2px;
+    }
+    .checkbox-group {
+        margin-bottom: 10px;
+    }
+    .checkbox-group .form-check {
+        margin-left: 20px;
+    }
+    .detalle-otro {
+        margin-top: 10px;
+        margin-left: 20px;
+        display: none;
+    }
+    .fecha-detalle {
+        margin-bottom: 10px;
+        padding: 10px;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        background-color: #f8f9fa;
+    }
+    .fecha-detalle button {
+        margin-left: 10px;
+    }
+    #fechas-seleccionadas-container {
+        margin-top: 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2 class="mb-4">Formulario de Solicitud de Reserva</h2>
+        
+        <form method="POST" enctype="multipart/form-data" id="reservationForm">
+            {{ form.csrf_token }}
+            
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title h5 mb-0">Datos Institucionales</h3>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="{{ form.institucion.id }}" class="form-label">{{ form.institucion.label.text }} *</label>
+                        {{ form.institucion(class="form-control") }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.objetivos.id }}" class="form-label">{{ form.objetivos.label.text }}</label>
+                        {{ form.objetivos(class="form-control", rows=3) }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.antecedentes.id }}" class="form-label">{{ form.antecedentes.label.text }}</label>
+                        {{ form.antecedentes(class="form-control", rows=3) }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.actividad.id }}" class="form-label">{{ form.actividad.label.text }} *</label>
+                        {{ form.actividad(class="form-control", rows=4) }}
+                        <div class="form-text">Detallar qué tipo de actividades/muestreos se van a llevar a cabo. Para muestreos a campo, detallar el protocolo.</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.finalidad.label.text }}</label>
+                        <div class="checkbox-group">
+                            {% for value, label in form.finalidad.choices %}
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="{{ form.finalidad.name }}" id="finalidad_{{ value }}" value="{{ value }}" {% if value == 'otro' %}onchange="toggleDetalleOtro(this, 'detalleFinalidadOtro')"{% endif %}>
+                                <label class="form-check-label" for="finalidad_{{ value }}">{{ label }}</label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div id="detalleFinalidadOtro" class="detalle-otro">
+                            <label for="finalidad_otro_detalle" class="form-label">Detallar:</label>
+                            <input type="text" class="form-control" id="finalidad_otro_detalle" name="finalidad_otro_detalle">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title h5 mb-0">Archivos Adjuntos</h3>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="{{ form.permiso_file.id }}" class="form-label">{{ form.permiso_file.label.text }}</label>
+                        {{ form.permiso_file(class="form-control") }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.integrantes_file.id }}" class="form-label">{{ form.integrantes_file.label.text }}</label>
+                        {{ form.integrantes_file(class="form-control") }}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title h5 mb-0">Alojamiento</h3>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3 form-check">
+                        {{ form.pernoctar(class="form-check-input") }}
+                        <label for="{{ form.pernoctar.id }}" class="form-check-label">{{ form.pernoctar.label.text }}</label>
+                    </div>
+                    
+                    <div id="pernoctarOptions" class="ps-4 mb-3" style="display: none;">
+                        <div class="alert alert-info" role="alert">
+                            Seleccione las fechas en el calendario y especifique la cantidad de personas para cada fecha. Puede agregar hasta 12 personas por noche en total.
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Reserva de pernocte</label>
+                            <div class="calendar-container">
+                                <div id="calendar"></div>
+                            </div>
+                            
+                            <div id="fechas-seleccionadas-container" class="mt-3">
+                                <h5>Fechas seleccionadas:</h5>
+                                <div id="fechas-detalle-container" class="mb-3">
+                                    <div class="text-muted" id="no-fechas-mensaje">Ninguna fecha seleccionada</div>
+                                </div>
+                                
+                                {{ form.fechas_reserva(id="fechas_reserva_input", type="hidden") }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title h5 mb-0">Actividades</h3>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.sitios.label.text }}</label>
+                        <div class="checkbox-group">
+                            {% for value, label in form.sitios.choices %}
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="{{ form.sitios.name }}" id="sitio_{{ value }}" value="{{ value }}" {% if value == 'otro' %}onchange="toggleDetalleOtro(this, 'detalleSitioOtro')"{% endif %}>
+                                <label class="form-check-label" for="sitio_{{ value }}">{{ label }}</label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div id="detalleSitioOtro" class="detalle-otro">
+                            <label for="sitio_otro_detalle" class="form-label">Detallar:</label>
+                            <input type="text" class="form-control" id="sitio_otro_detalle" name="sitio_otro_detalle">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.infraestructuras.label.text }}</label>
+                        <div class="checkbox-group">
+                            {% for value, label in form.infraestructuras.choices %}
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="{{ form.infraestructuras.name }}" id="infra_{{ value }}" value="{{ value }}" {% if value == 'otra' %}onchange="toggleDetalleOtro(this, 'detalleInfraOtra')"{% endif %}>
+                                <label class="form-check-label" for="infra_{{ value }}">{{ label }}</label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div id="detalleInfraOtra" class="detalle-otro">
+                            <label for="infra_otra_detalle" class="form-label">Detallar:</label>
+                            <input type="text" class="form-control" id="infra_otra_detalle" name="infra_otra_detalle">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        {{ form.requiere_ayudantes(class="form-check-input") }}
+                        <label for="{{ form.requiere_ayudantes.id }}" class="form-check-label">{{ form.requiere_ayudantes.label.text }}</label>
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        {{ form.requiere_pasajes(class="form-check-input") }}
+                        <label for="{{ form.requiere_pasajes.id }}" class="form-check-label">{{ form.requiere_pasajes.label.text }}</label>
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        {{ form.requiere_alojamiento(class="form-check-input") }}
+                        <label for="{{ form.requiere_alojamiento.id }}" class="form-check-label">{{ form.requiere_alojamiento.label.text }}</label>
+                    </div>
+                    
+                    <div class="mb-3" id="alojamientoDetalles" style="display: none;">
+                        <label for="{{ form.alojamiento_detalles.id }}" class="form-label">{{ form.alojamiento_detalles.label.text }}</label>
+                        {{ form.alojamiento_detalles(class="form-control", rows=3) }}
+                        <div class="form-text">En caso de no ser la totalidad de integrantes los que requieran alojamiento, aclarar cuántos, quiénes y requerimientos especiales.</div>
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        {{ form.requiere_vianda(class="form-check-input") }}
+                        <label for="{{ form.requiere_vianda.id }}" class="form-check-label">{{ form.requiere_vianda.label.text }}</label>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.otras_aclaraciones.id }}" class="form-label">{{ form.otras_aclaraciones.label.text }}</label>
+                        {{ form.otras_aclaraciones(class="form-control", rows=3) }}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title h5 mb-0">Datos de Contacto</h3>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="{{ form.responsable_nombre.id }}" class="form-label">{{ form.responsable_nombre.label.text }} *</label>
+                        {{ form.responsable_nombre(class="form-control") }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.responsable_dni.id }}" class="form-label">{{ form.responsable_dni.label.text }} *</label>
+                        {{ form.responsable_dni(class="form-control") }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.email.id }}" class="form-label">{{ form.email.label.text }} *</label>
+                        {{ form.email(class="form-control") }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.email_alternativo.id }}" class="form-label">{{ form.email_alternativo.label.text }}</label>
+                        {{ form.email_alternativo(class="form-control") }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.telefono.id }}" class="form-label">{{ form.telefono.label.text }} *</label>
+                        {{ form.telefono(class="form-control") }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.direccion_postal.id }}" class="form-label">{{ form.direccion_postal.label.text }}</label>
+                        {{ form.direccion_postal(class="form-control") }}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mb-4">
+                <p>
+                    Al enviar este formulario, el investigador responsable y su equipo de ayudantes declaran conocer el "Reglamento de uso" de la Estación Biológica Puerto Blest.
+                </p>
+                <button type="submit" class="btn btn-primary btn-lg">Enviar Solicitud</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal para agregar/editar cantidad de personas por fecha -->
+<div class="modal fade" id="cantidadPersonasModal" tabindex="-1" aria-labelledby="cantidadPersonasModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cantidadPersonasModalLabel">Cantidad de personas</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="cantidadPersonasForm">
+                    <input type="hidden" id="fecha-modal" value="">
+                    <div class="mb-3">
+                        <label for="cantidad-personas-modal" class="form-label">¿Cuántas personas pernoctarán el <span id="fecha-texto"></span>?</label>
+                        <input type="number" class="form-control" id="cantidad-personas-modal" min="1" max="12" value="1">
+                        <div class="form-text">Máximo 12 personas por noche en total</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="guardar-cantidad">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Variables para el calendario y fechas seleccionadas
+        let fechasSeleccionadas = [];
+        let calendarioIniciado = false;
+        let calendar;
+        
+        // Mostrar/ocultar opciones según checkboxes
+        const pernoctarCheck = document.getElementById('{{ form.pernoctar.id }}');
+        const pernoctarOptions = document.getElementById('pernoctarOptions');
+        const calendarContainer = document.querySelector('.calendar-container');
+        
+        pernoctarCheck.addEventListener('change', function() {
+            pernoctarOptions.style.display = this.checked ? 'block' : 'none';
+            calendarContainer.style.display = this.checked ? 'block' : 'none';
+            
+            // Iniciar calendario si no se ha hecho ya
+            if (this.checked && !calendarioIniciado) {
+                initCalendar();
+                calendarioIniciado = true;
+            }
+        });
+        
+        const alojamientoCheck = document.getElementById('{{ form.requiere_alojamiento.id }}');
+        const alojamientoDetalles = document.getElementById('alojamientoDetalles');
+        
+        alojamientoCheck.addEventListener('change', function() {
+            alojamientoDetalles.style.display = this.checked ? 'block' : 'none';
+        });
+        
+        // Variables para el modal
+        const cantidadModal = new bootstrap.Modal(document.getElementById('cantidadPersonasModal'));
+        const fechaModalInput = document.getElementById('fecha-modal');
+        const fechaTextoSpan = document.getElementById('fecha-texto');
+        const cantidadModalInput = document.getElementById('cantidad-personas-modal');
+        const guardarCantidadBtn = document.getElementById('guardar-cantidad');
+        
+        // Función para formatear fechas YYYY-MM-DD
+        function formatearFecha(fecha) {
+            const d = new Date(fecha);
+            if (isNaN(d.getTime())) {
+                // Si la fecha es inválida, retornar fecha actual formateada
+                const hoy = new Date();
+                const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+                const dia = String(hoy.getDate()).padStart(2, '0');
+                return `${hoy.getFullYear()}-${mes}-${dia}`;
+            }
+            
+            const mes = String(d.getMonth() + 1).padStart(2, '0');
+            const dia = String(d.getDate()).padStart(2, '0');
+            return `${d.getFullYear()}-${mes}-${dia}`;
+        }
+        
+        // Función para formatear fecha en formato legible
+        function formatearFechaLegible(fechaStr) {
+            const fecha = new Date(fechaStr);
+            return fecha.toLocaleDateString('es-ES', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+        
+        // Función para actualizar el campo oculto con las fechas y cantidades
+        function actualizarCampoOculto() {
+            const fechasInput = document.getElementById('fechas_reserva_input');
+            fechasInput.value = JSON.stringify(fechasSeleccionadas);
+            console.log("Input value:", fechasInput.value);
+        }
+        
+        // Función para actualizar la visualización de fechas seleccionadas
+        function actualizarVistaFechas() {
+            const container = document.getElementById('fechas-detalle-container');
+            const noFechasMsg = document.getElementById('no-fechas-mensaje');
+            
+            // Limpiar el contenedor
+            container.innerHTML = '';
+            
+            if (fechasSeleccionadas.length === 0) {
+                container.appendChild(noFechasMsg);
+                return;
+            }
+            
+            // Ordenar fechas
+            fechasSeleccionadas.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+            
+            // Crear elementos para cada fecha
+            fechasSeleccionadas.forEach(item => {
+                const divFecha = document.createElement('div');
+                divFecha.className = 'fecha-detalle d-flex justify-content-between align-items-center';
+                
+                const fechaInfo = document.createElement('div');
+                fechaInfo.innerHTML = `<strong>${formatearFechaLegible(item.fecha)}</strong>: ${item.cantidad} personas`;
+                divFecha.appendChild(fechaInfo);
+                
+                const botonesDiv = document.createElement('div');
+                
+                const btnEditar = document.createElement('button');
+                btnEditar.type = 'button';
+                btnEditar.className = 'btn btn-sm btn-outline-primary';
+                btnEditar.textContent = 'Editar';
+                btnEditar.addEventListener('click', () => abrirModalEditar(item.fecha, item.cantidad));
+                
+                const btnEliminar = document.createElement('button');
+                btnEliminar.type = 'button';
+                btnEliminar.className = 'btn btn-sm btn-outline-danger';
+                btnEliminar.textContent = 'Eliminar';
+                btnEliminar.addEventListener('click', () => eliminarFecha(item.fecha));
+                
+                botonesDiv.appendChild(btnEditar);
+                botonesDiv.appendChild(btnEliminar);
+                divFecha.appendChild(botonesDiv);
+                
+                container.appendChild(divFecha);
+            });
+        }
+        
+        // Función para abrir el modal para editar una fecha
+        function abrirModalEditar(fecha, cantidad) {
+            fechaModalInput.value = fecha;
+            fechaTextoSpan.textContent = formatearFechaLegible(fecha);
+            cantidadModalInput.value = cantidad;
+            cantidadModal.show();
+        }
+        
+        // Función para eliminar una fecha
+        function eliminarFecha(fecha) {
+            fechasSeleccionadas = fechasSeleccionadas.filter(item => item.fecha !== fecha);
+            calendar.setDate([]); // Limpiar selecciones del calendario
+            
+            // Volver a marcar las fechas restantes en el calendario
+            fechasSeleccionadas.forEach(item => {
+                calendar.setDate(item.fecha, true);
+            });
+            
+            actualizarVistaFechas();
+            actualizarCampoOculto();
+        }
+        
+        // Manejador de evento para guardar cantidad desde el modal
+        guardarCantidadBtn.addEventListener('click', function() {
+            const fecha = fechaModalInput.value;
+            const cantidad = parseInt(cantidadModalInput.value);
+            
+            if (!fecha || isNaN(cantidad) || cantidad < 1 || cantidad > 12) {
+                alert('Por favor ingrese una cantidad válida (entre 1 y 12)');
+                return;
+            }
+            
+            // Verificar disponibilidad
+            verificarDisponibilidadYGuardar(fecha, cantidad);
+        });
+        
+        // Función para verificar disponibilidad y guardar
+        function verificarDisponibilidadYGuardar(fecha, cantidad) {
+            fetch(`/verificar_disponibilidad?fecha=${fecha}&cantidad=${cantidad}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error en la respuesta del servidor');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.disponible) {
+                        // Actualizar o agregar la fecha con la cantidad específica
+                        const fechaExistente = fechasSeleccionadas.find(item => item.fecha === fecha);
+                        
+                        if (fechaExistente) {
+                            fechaExistente.cantidad = cantidad;
+                        } else {
+                            fechasSeleccionadas.push({
+                                fecha: fecha,
+                                cantidad: cantidad
+                            });
+                        }
+                        
+                        cantidadModal.hide();
+                        actualizarVistaFechas();
+                        actualizarCampoOculto();
+                    } else {
+                        alert(`No hay suficiente disponibilidad para la fecha seleccionada. Disponibles: ${data.disponibles}`);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al verificar disponibilidad:', error);
+                    alert('Error al verificar disponibilidad. Intente de nuevo más tarde.');
+                });
+        }
+        
+        // Función para inicializar el calendario
+        function initCalendar() {
+            const fechasInput = document.getElementById('fechas_reserva_input');
+            
+            // Intentar recuperar datos previos
+            try {
+                if (fechasInput.value) {
+                    fechasSeleccionadas = JSON.parse(fechasInput.value);
+                    actualizarVistaFechas();
+                }
+            } catch (e) {
+                console.error('Error al parsear fechas guardadas:', e);
+                fechasSeleccionadas = [];
+            }
+            
+            // Enfoque simplificado: usar directamente flatpickr para manejo de fechas
+            calendar = flatpickr('#calendar', {
+                mode: 'multiple',
+                dateFormat: 'Y-m-d',
+                minDate: 'today',
+                locale: 'es',
+                inline: true,
+                onChange: function(selectedDates, dateStr, instance) {
+                    if (selectedDates.length > 0) {
+                        const fechasActuales = selectedDates.map(date => formatearFecha(date));
+                        const fechasGuardadas = fechasSeleccionadas.map(item => item.fecha);
+                        const nuevasFechas = fechasActuales.filter(f => !fechasGuardadas.includes(f));
+                        
+                        if (nuevasFechas.length > 0) {
+                            const nuevaFecha = nuevasFechas[0];
+                            abrirModalEditar(nuevaFecha, 1);
+                        }
+                        
+                        const fechasEliminadas = fechasGuardadas.filter(f => !fechasActuales.includes(f));
+                        if (fechasEliminadas.length > 0) {
+                            fechasEliminadas.forEach(fecha => {
+                                fechasSeleccionadas = fechasSeleccionadas.filter(item => item.fecha !== fecha);
+                            });
+                            actualizarVistaFechas();
+                            actualizarCampoOculto();
+                        }
+                    } else {
+                        fechasSeleccionadas = [];
+                        actualizarVistaFechas();
+                        actualizarCampoOculto();
+                    }
+                }
+            });
+            
+            if (fechasSeleccionadas.length > 0) {
+                const fechas = fechasSeleccionadas.map(item => item.fecha);
+                calendar.setDate(fechas);
+            }
+            
+            setTimeout(() => {
+                const diasVisibles = document.querySelectorAll('.flatpickr-day');
+                diasVisibles.forEach(dia => {
+                    if (dia.getAttribute('aria-label')) {
+                        try {
+                            const fechaStr = formatearFecha(dia.getAttribute('aria-label'));
+                            cargarDisponibilidad(fechaStr, 1, dia);
+                        } catch (e) {
+                            console.error('Error al formatear fecha:', e);
+                        }
+                    }
+                });
+            }, 500);
+        }
+        
+        function cargarDisponibilidad(fecha, cantidad, diaElemento) {
+            fetch(`/verificar_disponibilidad?fecha=${fecha}&cantidad=${cantidad}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error en la respuesta del servidor');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    let infoElement = diaElemento.querySelector('.disponibilidad-info');
+                    if (!infoElement) {
+                        infoElement = document.createElement('span');
+                        infoElement.className = 'disponibilidad-info';
+                        diaElemento.appendChild(infoElement);
+                    }
+                    
+                    const disponibles = data.disponibles || 0;
+                    infoElement.textContent = disponibles;
+                    
+                    if (disponibles < 1) {
+                        diaElemento.classList.add('no-disponible');
+                        diaElemento.classList.remove('disponible');
+                    } else {
+                        diaElemento.classList.add('disponible');
+                        diaElemento.classList.remove('no-disponible');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al verificar disponibilidad:', error);
+                    diaElemento.classList.add('disponible');
+                    diaElemento.classList.remove('no-disponible');
+                });
+        }
+        
+        if (pernoctarCheck.checked) {
+            pernoctarOptions.style.display = 'block';
+            calendarContainer.style.display = 'block';
+            initCalendar();
+            calendarioIniciado = true;
+        }
+        
+        if (alojamientoCheck.checked) {
+            alojamientoDetalles.style.display = 'block';
+        }
+
+        function checkInitialOtroSelections() {
+            const sitioOtroCheck = document.getElementById('sitio_otro');
+            if (sitioOtroCheck && sitioOtroCheck.checked) {
+                document.getElementById('detalleSitioOtro').style.display = 'block';
+            }
+            
+            const infraOtraCheck = document.getElementById('infra_otra');
+            if (infraOtraCheck && infraOtraCheck.checked) {
+                document.getElementById('detalleInfraOtra').style.display = 'block';
+            }
+            
+            const finalidadOtroCheck = document.getElementById('finalidad_otro');
+            if (finalidadOtroCheck && finalidadOtroCheck.checked) {
+                document.getElementById('detalleFinalidadOtro').style.display = 'block';
+            }
+        }
+        
+        const finalidadSelect = document.getElementById('{{ form.finalidad.id }}');
+        if (finalidadSelect && finalidadSelect.value === 'otro') {
+            document.getElementById('detalleFinalidadOtro').style.display = 'block';
+        }
+        
+        checkInitialOtroSelections();
+    });
+    
+    function toggleDetalleOtro(checkbox, detalleId) {
+        const detalleElement = document.getElementById(detalleId);
+        if (checkbox.checked) {
+            detalleElement.style.display = 'block';
+        } else {
+            detalleElement.style.display = 'none';
+            const inputField = detalleElement.querySelector('input');
+            if (inputField) {
+                inputField.value = '';
+            }
+        }
+    }
+    
+    function toggleFinalidadOtro(selectElement) {
+        const detalleElement = document.getElementById('detalleFinalidadOtro');
+        if (selectElement.value === 'otro') {
+            detalleElement.style.display = 'block';
+        } else {
+            detalleElement.style.display = 'none';
+            document.getElementById('finalidad_otro_detalle').value = '';
+        }
+    }
+</script>
+{% endblock %}

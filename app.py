@@ -4,6 +4,7 @@ from werkzeug.security import generate_password_hash
 import os
 import click
 
+# Crear la aplicación Flask
 app = create_app()
 
 @app.cli.command("init-db")

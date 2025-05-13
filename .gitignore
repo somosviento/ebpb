@@ -1,0 +1,45 @@
+# Archivos de Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Entornos virtuales
+venv/
+ENV/
+
+# Archivos de base de datos SQLite (opcional, depende si quieres subir tu base de datos)
+# instance/ebpb.db
+
+# Archivos generados
+app/static/pdf/
+app/static/exports/
+
+# Archivos de configuración local
+.env
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Archivos de IDE/editores
+.idea/
+.vscode/
+*.swp
+*.swo

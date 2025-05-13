@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}Estación Biológica de Puerto Blest - Inicio{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero-section {
+        background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1518718434868-4e2fe0b09834?q=80&w=1200') no-repeat center center;
+        background-size: cover;
+        color: white;
+        padding: 6rem 0;
+        border-radius: 12px;
+        margin-bottom: 1rem;
+    }
+    
+    .feature-card {
+        border: none;
+        border-radius: 10px;
+        transition: transform 0.2s;
+        height: 100%;
+    }
+    
+    /* .feature-card:hover {
+        transform: translateY(-5px);
+    } */
+    
+    .feature-icon {
+        font-size: 2rem;
+        color: #3b82f6;
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="container text-center">
+        <h1 class="display-4 fw-bold mb-3">Estación Biológica de Puerto Blest</h1>
+        <p class="lead mb-4">
+            Sistema de reservas para actividades académicas y de investigación
+        </p>
+        <div>
+            <a href="{{ url_for('form.reservation_form') }}" class="btn btn-primary btn-lg">
+                <i class="bi bi-calendar-plus"></i> Reservar Ahora
+            </a>
+            <a href="{{ url_for('main.about') }}" class="btn btn-outline-light btn-lg ms-2">
+                <i class="bi bi-info-circle"></i> Más Información
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="row mb-5">
+    <div class="col-md-4 mb-4">
+        <div class="card feature-card shadow-sm h-100">
+            <div class="card-body text-center p-4">
+                <div class="feature-icon">
+                    <i class="bi bi-building"></i>
+                </div>
+                <h3 class="h5 mb-3">Capacidad</h3>
+                <p class="card-text">
+                    Alojamiento para hasta 12 personas por noche en un entorno natural único.
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card feature-card shadow-sm h-100">
+            <div class="card-body text-center p-4">
+                <div class="feature-icon">
+                    <i class="bi bi-mortarboard"></i>
+                </div>
+                <h3 class="h5 mb-3">Cátedras</h3>
+                <p class="card-text">
+                    Espacio ideal para actividades académicas y salidas de campo universitarias.
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card feature-card shadow-sm h-100">
+            <div class="card-body text-center p-4">
+                <div class="feature-icon">
+                    <i class="bi bi-search"></i>
+                </div>
+                <h3 class="h5 mb-3">Investigación</h3>
+                <p class="card-text">
+                    Instalaciones adecuadas para equipos de investigación científica y proyectos.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Contact Section -->
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+        <div class="row align-items-center">
+            <div class="col-lg-8 mb-3 mb-lg-0">
+                <h3 class="h4 mb-3">¿Necesitas más información?</h3>
+                <p class="mb-0">
+                    No dudes en contactarnos para resolver cualquier duda sobre la estación o el proceso de reserva.
+                </p>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <div class="d-flex flex-column">
+                    <span class="mb-2"><i class="bi bi-envelope me-2"></i> secretaria.investigacion@crub.uncoma.edu.ar</span>
+                    <span><i class="bi bi-telephone me-2"></i> +54 294 442 3374 / 6368 / 2111 (Int. 303)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

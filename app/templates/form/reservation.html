@@ -1,0 +1,377 @@
+{% extends 'base.html' %}
+
+{% block title %}Formulario de Reserva{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h2 class="mb-0">Formulario de Reserva - Estación Biológica de Puerto Blest</h2>
+    </div>
+    <div class="card-body">
+        <form id="reservationForm" method="POST" action="{{ url_for('form.reservation_form') }}">
+                        <!-- Tipo de formulario -->
+            <div class="mb-4 p-3 border rounded-3 bg-light">
+                <h4 class="mb-3"><i class="bi bi-bookmark"></i> Tipo de Reserva</h4>
+                <div class="d-flex flex-wrap">
+                    <div class="form-check form-check-inline me-4">
+                        <input class="form-check-input" type="radio" name="reservation_type" id="typeCatedra" value="catedra" checked>
+                        <label class="form-check-label" for="typeCatedra">
+                            <span class="d-flex align-items-center">
+                                Cátedra
+                            </span>
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="reservation_type" id="typeEquipo" value="equipo">
+                        <label class="form-check-label" for="typeEquipo">
+                            <span class="d-flex align-items-center">
+                                Equipo de Investigación
+                            </span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+                        <!-- Datos del responsable -->
+            <div class="mb-4">
+                <h4 class="d-flex align-items-center mb-3">
+                    <i class="bi bi-person-badge me-2"></i> 
+                    Datos del Responsable
+                </h4>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="person_in_charge" class="form-label small text-muted">Nombre y Apellido *</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent"><i class="bi bi-person"></i></span>
+                            <input type="text" class="form-control" id="person_in_charge" name="person_in_charge" placeholder="Ingrese su nombre completo" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="dni" class="form-label small text-muted">DNI/Pasaporte *</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent"><i class="bi bi-card-text"></i></span>
+                            <input type="text" class="form-control" id="dni" name="dni" placeholder="Número de identificación" required>
+                        </div>
+                    </div>                    <div class="col-md-6">
+                        <label for="email" class="form-label small text-muted">Correo electrónico *</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent"><i class="bi bi-envelope"></i></span>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="correo@ejemplo.com" required>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label for="alternative_email" class="form-label small text-muted">Correo electrónico alternativo</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent"><i class="bi bi-envelope-at"></i></span>
+                            <input type="email" class="form-control" id="alternative_email" name="alternative_email" placeholder="correo.alternativo@ejemplo.com">
+                        </div>
+                    </div>
+                        
+                    <div class="col-md-6">
+                        <label for="phone" class="form-label small text-muted">Teléfono *</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent"><i class="bi bi-telephone"></i></span>
+                            <input type="text" class="form-control" id="phone" name="phone" placeholder="+54 000 0000000" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="institution" class="form-label small text-muted">Institución *</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent"><i class="bi bi-building"></i></span>
+                            <input type="text" class="form-control" id="institution" name="institution" placeholder="Universidad/Institución" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="parks_permit_number" class="form-label small text-muted">Permiso de Parques Nacionales</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent"><i class="bi bi-file-earmark-text"></i></span>
+                            <input type="text" class="form-control" id="parks_permit_number" name="parks_permit_number" placeholder="Número de permiso (opcional)">
+                        </div>
+                    </div>                    <div class="col-md-6">
+                        <label for="postal_address" class="form-label small text-muted">Dirección Postal *</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent"><i class="bi bi-geo-alt"></i></span>
+                            <input type="text" class="form-control" id="postal_address" name="postal_address" placeholder="Dirección completa" required>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Datos específicos según tipo -->
+            <div class="mb-4" id="catedraFields">
+                <h4>Información de la Cátedra</h4>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="department" class="form-label">Departamento *</label>
+                        <input type="text" class="form-control" id="department" name="department">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="subject" class="form-label">Asignatura *</label>
+                        <input type="text" class="form-control" id="subject" name="subject">
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-4" id="equipoFields" style="display: none;">
+                <h4>Información del Proyecto</h4>
+                <div class="row g-3">
+                    <div class="col-md-12">
+                        <label for="project_name" class="form-label">Nombre del Proyecto *</label>
+                        <input type="text" class="form-control" id="project_name" name="project_name">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="project_code" class="form-label">Código del Proyecto *</label>
+                        <input type="text" class="form-control" id="project_code" name="project_code">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="project_director" class="form-label">Director del Proyecto *</label>
+                        <input type="text" class="form-control" id="project_director" name="project_director">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fechas de reserva -->
+            <div class="mb-4 mt-5">
+                <h4 class="d-flex align-items-center mb-3">
+                    <i class="bi bi-calendar-event me-2"></i> 
+                    Fechas de Reserva
+                </h4>                <div class="alert alert-light border mb-5 d-block w-100 clearfix" style="margin-bottom: 1.5rem !important;">
+                    <div class="d-flex">
+                        <div class="me-3 text-primary">
+                            <i class="bi bi-info-circle-fill"></i>
+                        </div>
+                        <div>
+                            <p class="mb-0">La Estación tiene capacidad máxima para <strong>12 personas</strong> por noche.</p>
+                        </div>
+                    </div>
+                </div>
+                  <div id="dates-container" class="mt-4">
+                    <div class="date-entry row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small text-muted">Fecha</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-transparent"><i class="bi bi-calendar"></i></span>
+                                <input type="date" class="form-control date-picker" name="date[]" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small text-muted">Personas</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-transparent"><i class="bi bi-people"></i></span>
+                                <input type="number" class="form-control num-people" name="num_people[]" min="1" max="12" value="1" required>
+                            </div>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="button" class="btn btn-outline-danger remove-date w-100">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="button" class="btn btn-outline-secondary" id="add-date">
+                    <i class="bi bi-plus-circle me-2"></i> Agregar fecha
+                </button>
+            </div>
+
+                        <!-- Participantes -->
+            <div class="mb-4">
+                <h4 class="d-flex align-items-center mb-3">
+                    <i class="bi bi-people me-2"></i> 
+                    Participantes
+                </h4>
+                
+                <div class="alert alert-light border mb-3">
+                    <div class="d-flex">
+                        <div class="me-3 text-primary">
+                            <i class="bi bi-info-circle-fill"></i>
+                        </div>
+                        <div>
+                            <p class="mb-0">Agregue los datos de los demás participantes (sin incluir al responsable).</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="participants-container" class="mb-3">
+                    <!-- Los participantes se agregarán dinámicamente aquí -->
+                </div>
+                
+                <button type="button" class="btn btn-outline-primary" id="add-participant">
+                    <i class="bi bi-person-plus me-2"></i> Agregar participante
+                </button>
+            </div>
+
+            <!-- Información adicional -->
+            <div class="mb-4">
+                <h4 class="d-flex align-items-center mb-3">
+                    <i class="bi bi-file-text me-2"></i>
+                    Información Adicional
+                </h4>
+                
+                <div class="card mb-3 border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="activity_details" class="form-label small text-muted">Detalles de la actividad</label>
+                            <textarea class="form-control" id="activity_details" name="activity_details" rows="3" placeholder="Describa brevemente la actividad a realizar"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="equipment" class="form-label small text-muted">Equipamiento a utilizar</label>
+                            <textarea class="form-control" id="equipment" name="equipment" rows="3" placeholder="Liste el equipamiento que llevará o necesitará"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="observations" class="form-label small text-muted">Observaciones</label>
+                            <textarea class="form-control" id="observations" name="observations" rows="3" placeholder="Información adicional o requerimientos especiales"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>            <div class="text-center">
+                <button type="button" id="cancelButton" class="btn btn-outline-secondary btn-lg me-2" data-confirm="true"
+                        data-confirm-title="Cancelar formulario" 
+                        data-confirm-message="¿Está seguro que desea cancelar el formulario? Se perderán todos los datos ingresados."
+                        data-confirm-btn-class="btn-secondary"
+                        data-confirm-text="Sí, cancelar"
+                        data-confirm-callback="cancelForm">Cancelar</button>
+                <button type="submit" class="btn btn-primary btn-lg">Enviar Solicitud</button>
+            </div>
+
+            <script>
+                function cancelForm() {
+                    window.location.href = "{{ url_for('main.index') }}";
+                }
+            </script>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+    $(document).ready(function() {
+        // Cambiar campos según tipo de reserva
+        $('input[name="reservation_type"]').change(function() {
+            if ($(this).val() === 'catedra') {
+                $('#catedraFields').show();
+                $('#equipoFields').hide();
+            } else {
+                $('#catedraFields').hide();
+                $('#equipoFields').show();
+            }
+        });
+
+        // Inicializar selector de fechas
+        $('.date-picker').flatpickr({
+            minDate: "today",
+            dateFormat: "Y-m-d"
+        });        // Agregar fecha adicional
+        $('#add-date').click(function() {
+            const dateEntry = `
+                <div class="date-entry row g-3 mb-2">
+                    <div class="col-md-6">
+                        <label class="form-label small text-muted">Fecha</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent"><i class="bi bi-calendar"></i></span>
+                            <input type="date" class="form-control date-picker" name="date[]" required>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small text-muted">Personas</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent"><i class="bi bi-people"></i></span>
+                            <input type="number" class="form-control num-people" name="num_people[]" min="1" max="12" value="1" required>
+                        </div>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="button" class="btn btn-outline-danger remove-date w-100">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            $('#dates-container').append(dateEntry);
+            
+            // Reinicializar date picker para el nuevo campo
+            $('#dates-container .date-picker').last().flatpickr({
+                minDate: "today",
+                dateFormat: "Y-m-d"
+            });
+        });        // La funcionalidad de eliminar fecha se maneja ahora en el script confirmation.js
+        // El método initRemoveDateButtons() reemplaza este código// Agregar participante
+        $('#add-participant').click(function() {
+            const participantHtml = `
+                <div class="participant-entry card mb-3">
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Nombre y Apellido *</label>
+                                <input type="text" class="form-control" name="participant_name[]" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">DNI/Pasaporte *</label>
+                                <input type="text" class="form-control" name="participant_dni[]" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" name="participant_email[]">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Teléfono</label>
+                                <input type="text" class="form-control" name="participant_phone[]">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Rol *</label>
+                                <select class="form-select" name="participant_role[]" required>
+                                    <option value="">Seleccionar...</option>
+                                    <option value="docente">Docente</option>
+                                    <option value="estudiante">Estudiante</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-danger mt-3 remove-participant">Eliminar participante</button>
+                    </div>
+                </div>
+            `;
+            $('#participants-container').append(participantHtml);
+        });        // La funcionalidad de eliminar participante se maneja ahora en el script confirmation.js
+        // El método initRemoveParticipantButtons() reemplaza este código
+
+        // Verificar disponibilidad al cambiar fecha o cantidad de personas
+        $(document).on('change', '.date-picker, .num-people', function() {
+            const dateField = $(this).closest('.date-entry').find('.date-picker');
+            const numPeopleField = $(this).closest('.date-entry').find('.num-people');
+            
+            const date = dateField.val();
+            const numPeople = numPeopleField.val();
+            
+            if (date && numPeople) {
+                $.ajax({
+                    url: "{{ url_for('form.check_availability_endpoint') }}",
+                    method: 'POST',
+                    data: {
+                        date: date,
+                        num_people: numPeople
+                    },
+                    success: function(response) {                        if (!response.available) {
+                            showAlertModal(
+                                'Sin disponibilidad', 
+                                `No hay disponibilidad para ${numPeople} personas en la fecha seleccionada.`,
+                                'Entendido',
+                                'btn-warning'
+                            );
+                            numPeopleField.val(1);
+                        } else {
+                            console.log(`Disponibilidad confirmada. Quedan ${response.remaining} lugares.`);
+                        }
+                    }
+                });
+            }
+        });
+    });
+</script>
+{% endblock %}

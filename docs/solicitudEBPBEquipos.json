@@ -1,0 +1,47 @@
+{
+  "institucion": "Estación Biológica del Bosque Lluvioso Templado",
+  "ubicacion": "Puerto Blest - Patagonia - Argentina",
+  "lugar_fecha": "",
+  "institucion_solicitante": "",
+  "actividad": {
+    "tipo": "",
+    "objetivos": "",
+    "antecedentes": "",
+    "actividades": ""
+  },
+  "fechas_uso": {
+    "inicio": "",
+    "fin": "",
+    "tentativas": ""
+  },
+  "sitios_actividad": "",
+  "infraestructura_utilizar": "",
+  "requerimientos": {
+    "ayudantes_colaboradores": "",
+    "gestion_pasajes_descuento": "",
+    "alojamiento_descuento": {
+      "requiere": "",
+      "cantidad_personas": "",
+      "detalles": ""
+    },
+    "servicio_vianda_restaurante": ""
+  },
+  "otras_aclaraciones": "",
+  "integrantes": [
+    {
+      "apellido": "",
+      "nombres": "",
+      "DNI_pasaporte": "",
+      "institucion_cargo": "",
+      "nacionalidad": ""
+    }
+  ],
+  "responsable_designado": {
+    "apellido_nombre": "",
+    "DNI": "",
+    "email_principal": "",
+    "email_alternativo": "",
+    "telefono": "",
+    "direccion_postal": ""
+  }
+}

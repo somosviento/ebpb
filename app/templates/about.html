@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block title %}Acerca de la Estación Biológica Puerto Blest{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h2 class="mb-0">Estación Biológica de Puerto Blest</h2>
+            </div>
+            <div class="card-body">
+                <h4>¿Qué es la Estación Biológica de Puerto Blest?</h4>
+                <p>
+                    La Estación Biológica de Puerto Blest es un centro de investigación y docencia ubicado en el corazón del 
+                    Parque Nacional Nahuel Huapi, en la provincia de Río Negro, Argentina. Este espacio está destinado a actividades 
+                    de investigación científica y educación en el ámbito de las ciencias naturales.
+                </p>
+
+                <h4>Instalaciones</h4>
+                <p>
+                    La estación cuenta con:
+                </p>
+                <ul>
+                    <li>Alojamiento para hasta 12 personas.</li>
+                    <li>Cocina equipada para uso compartido.</li>
+                    <li>Baños completos.</li>
+                    <li>Espacio de trabajo para muestras y análisis básicos.</li>
+                    <li>Energía solar.</li>
+                </ul>
+
+                <h4>¿Quiénes pueden usar la Estación?</h4>
+                <p>
+                    La estación está disponible para:
+                </p>
+                <ul>
+                    <li>Cátedras universitarias que requieran realizar trabajos de campo.</li>
+                    <li>Equipos de investigación con proyectos aprobados.</li>
+                </ul>
+
+                <h4>Ubicación</h4>
+                <p>
+                    Puerto Blest se encuentra a orillas del Lago Nahuel Huapi, en el extremo oeste del brazo Blest. 
+                    Se puede acceder únicamente por vía lacustre desde Puerto Pañuelo (Bariloche).
+                </p>
+
+                <h4>Requisitos para la reserva</h4>
+                <p>
+                    Para poder realizar actividades en la Estación Biológica de Puerto Blest, es necesario:
+                </p>
+                <ul>
+                    <li>Completar el formulario de reserva.</li>
+                    <li>Para investigaciones: contar con proyecto aprobado.</li>
+                    <li>Para actividades docentes: ser parte de una cátedra universitaria.</li>
+                    <li>Contar con el permiso correspondiente de la Administración de Parques Nacionales.</li>
+                </ul>
+
+                <div class="text-center mt-4">
+                    <a href="{{ url_for('form.reservation_form') }}" class="btn btn-primary btn-lg">Reservar Ahora</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Contacto</h4>
+            </div>
+            <div class="card-body">
+                <p><strong>Email:</strong> secretaria.investigacion@crub.uncoma.edu.ar</p>
+                <p><strong>Teléfono:</strong> +54 294 XXXXXXX</p>
+                <p><strong>Dirección:</strong> Centro Regional Universitario Bariloche, Universidad Nacional del Comahue</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Parque Nacional Nahuel Huapi</h4>
+            </div>
+            <div class="card-body">
+                <p>
+                    Para más información sobre el Parque Nacional Nahuel Huapi y los permisos necesarios para investigación, 
+                    visite el sitio web oficial de la <a href="https://www.argentina.gob.ar/parquesnacionales/nahuelhuapi" target="_blank">Administración de Parques Nacionales</a>.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

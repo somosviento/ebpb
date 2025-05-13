@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}Reserva Confirmada{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header bg-success text-white">
+        <h2 class="mb-0">¡Reserva Enviada Correctamente!</h2>
+    </div>
+    <div class="card-body">
+        <div class="mb-4">
+            <h4>Detalles de la Reserva</h4>
+            <p>Su solicitud ha sido registrada con los siguientes datos:</p>
+            
+            <table class="table table-bordered">
+                <tr>
+                    <th>Responsable:</th>
+                    <td>{{ reservation.person_in_charge }}</td>
+                </tr>
+                <tr>
+                    <th>DNI:</th>
+                    <td>{{ reservation.dni }}</td>
+                </tr>
+                <tr>
+                    <th>Email:</th>
+                    <td>{{ reservation.email }}</td>
+                </tr>
+                <tr>
+                    <th>Email alternativo:</th>
+                    <td>{{ reservation.alternative_email if reservation.alternative_email else "No especificado" }}</td>
+                </tr>
+                <tr>
+                    <th>Dirección Postal:</th>
+                    <td>{{ reservation.postal_address }}</td>
+                </tr>
+                <tr>
+                    <th>Tipo de reserva:</th>
+                    <td>
+                        {% if reservation.reservation_type == 'catedra' %}
+                            Cátedra - {{ reservation.subject }}
+                        {% else %}
+                            Equipo de Investigación - {{ reservation.project_name }}
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>Fechas:</th>
+                    <td>
+                        <ul class="mb-0">
+                            {% for date_range in reservation.date_ranges %}
+                                <li>{{ date_range.date.strftime('%d/%m/%Y') }} - {{ date_range.num_people }} personas</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        
+        <div class="alert alert-info">
+            <h5 class="alert-heading">¿Qué sigue?</h5>
+            <p>Su solicitud será revisada por el personal administrativo. Recibirá un correo electrónico en <strong>{{ reservation.email }}</strong> con la confirmación de su reserva.</p>
+            <p class="mb-0">Si tiene alguna pregunta, puede contactar a <strong>secretaria.investigacion@crub.uncoma.edu.ar</strong>.</p>
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="{{ url_for('main.index') }}" class="btn btn-primary">Volver al inicio</a>
+            {% if reservation.pdf_path %}
+                <a href="{{ url_for('static', filename='pdf/' + reservation.pdf_path.replace('\\', '/').split('/')[-1]) }}" class="btn btn-secondary" target="_blank">Descargar PDF</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -29,9 +29,17 @@ class Reservation(db.Model):
     project_director = db.Column(db.String(100), nullable=True)  # Para equipos de investigación
     
     # Información adicional
+    objetivos = db.Column(db.Text, nullable=True)  # Nuevo campo para objetivos
     activity_details = db.Column(db.Text, nullable=True)
     observations = db.Column(db.Text, nullable=True)
     equipment = db.Column(db.Text, nullable=True)
+    requiere_pasajes = db.Column(db.Boolean, default=False)  # Nuevo campo para gestión de pasajes
+    
+    # Campos específicos para equipos de investigación
+    activity_sites = db.Column(db.String(255), nullable=True)  # Sitios donde se desarrollarán las actividades
+    requiere_ayudantes = db.Column(db.Boolean, default=False)  # Requiere ayudantes/colaboradores
+    requiere_pasajes_equipo = db.Column(db.Boolean, default=False)  # Requiere pasajes con descuento
+    requiere_vianda = db.Column(db.Boolean, default=False)  # Requiere servicio de vianda
     
     # Estado de la reserva
     status = db.Column(db.String(20), default='pendiente')  # pendiente, aprobada, rechazada, cancelada

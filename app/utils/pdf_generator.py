@@ -125,9 +125,7 @@ def generate_pdf(reservation):
         pdf.cell(60, 8, f'{i}. {participant.name}', 0, 0)
         pdf.cell(0, 8, participant.dni, 0, 1)
     
-    pdf.ln(5)
-    
-    # Detalles de la actividad
+    pdf.ln(5)    # Detalles de la actividad
     if reservation.activity_details:
         pdf.set_font('Arial', 'B', 12)
         pdf.cell(0, 10, 'DETALLES DE LA ACTIVIDAD', 0, 1)
@@ -135,6 +133,16 @@ def generate_pdf(reservation):
         
         # Texto multilínea
         pdf.multi_cell(0, 8, reservation.activity_details)
+        pdf.ln(5)
+    
+    # Objetivos
+    if reservation.objetivos:
+        pdf.set_font('Arial', 'B', 12)
+        pdf.cell(0, 10, 'OBJETIVOS', 0, 1)
+        pdf.set_font('Arial', '', 11)
+        
+        # Texto multilínea
+        pdf.multi_cell(0, 8, reservation.objetivos)
         pdf.ln(5)
     
     # Equipamiento
@@ -145,9 +153,7 @@ def generate_pdf(reservation):
         
         # Texto multilínea
         pdf.multi_cell(0, 8, reservation.equipment)
-        pdf.ln(5)
-    
-    # Observaciones
+        pdf.ln(5)    # Observaciones
     if reservation.observations:
         pdf.set_font('Arial', 'B', 12)
         pdf.cell(0, 10, 'OBSERVACIONES', 0, 1)
@@ -155,6 +161,13 @@ def generate_pdf(reservation):
         
         # Texto multilínea
         pdf.multi_cell(0, 8, reservation.observations)
+        pdf.ln(5)
+    
+    # Requiere gestión de pasajes
+    pdf.set_font('Arial', 'B', 12)
+    pdf.cell(0, 10, 'GESTIÓN DE PASAJES', 0, 1)
+    pdf.set_font('Arial', '', 11)
+    pdf.cell(0, 8, "Sí" if reservation.requiere_pasajes else "No", 0, 1)
     
     # Guardar PDF
     pdf.output(filepath)

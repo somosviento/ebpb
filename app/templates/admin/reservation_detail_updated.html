@@ -64,18 +64,6 @@
                         <p><strong>Nombre del Proyecto:</strong> {{ reservation.project_name }}</p>
                         <p><strong>Código del Proyecto:</strong> {{ reservation.project_code }}</p>
                         <p><strong>Director del Proyecto:</strong> {{ reservation.project_director }}</p>
-                        
-                        {% if reservation.activity_sites %}
-                        <p><strong>Sitios de actividades:</strong> {{ reservation.activity_sites.replace(',', ', ') }}</p>
-                        {% endif %}
-                        
-                        {% if reservation.sites_within_area %}
-                        <p><strong>Sitios dentro del área:</strong> {{ reservation.sites_within_area }}</p>
-                        {% endif %}
-                        
-                        <p><strong>Requiere ayudantes:</strong> {{ 'Sí' if reservation.requiere_ayudantes else 'No' }}</p>
-                        <p><strong>Requiere pasajes con descuento:</strong> {{ 'Sí' if reservation.requiere_pasajes_equipo else 'No' }}</p>
-                        <p><strong>Requiere vianda/restaurante:</strong> {{ 'Sí' if reservation.requiere_vianda else 'No' }}</p>
                     </div>
                 </div>
                 {% endif %}
@@ -83,7 +71,8 @@
                 <div class="row mb-4">
                     <div class="col-md-12">
                         <h6>Detalles Adicionales</h6>
-                        <hr>                        {% if reservation.activity_details %}
+                        <hr>
+                        {% if reservation.activity_details %}
                         <p><strong>Detalles de la actividad:</strong></p>
                         <p class="border p-2 bg-light">{{ reservation.activity_details|nl2br }}</p>
                         {% endif %}
@@ -124,7 +113,8 @@
                     <span class="badge bg-secondary">Cancelada</span>
                 {% endif %}
             </div>
-            <div class="card-body">                <form action="{{ url_for('admin.update_reservation_status', reservation_id=reservation.id) }}" method="POST" id="updateStatusForm">
+            <div class="card-body">
+                <form action="{{ url_for('admin.update_reservation_status', reservation_id=reservation.id) }}" method="POST" id="updateStatusForm">
                     <div class="mb-3">
                         <label for="status" class="form-label">Cambiar estado</label>
                         <select class="form-select" id="status" name="status" data-original-value="{{ reservation.status }}">
@@ -167,7 +157,8 @@
                     });
                 </script>
 
-                <hr>                <form action="{{ url_for('admin.delete_reservation', reservation_id=reservation.id) }}" method="POST">
+                <hr>
+                <form action="{{ url_for('admin.delete_reservation', reservation_id=reservation.id) }}" method="POST">
                     <button type="submit" class="btn btn-danger w-100" data-confirm="true" 
                             data-confirm-title="Eliminar reserva" 
                             data-confirm-message="¿Está seguro de que desea eliminar esta reserva? Esta acción no se puede deshacer.">
@@ -175,21 +166,13 @@
                     </button>
                 </form>
             </div>
-        </div>        <div class="card mb-4">
+        </div>
+
+        <div class="card mb-4">
             <div class="card-header bg-primary text-white">
                 <h5 class="mb-0">Fechas de Reserva</h5>
-            </div>
-            <div class="card-body">
-                {% set overnight_dates = [] %}
-                {% set day_use_dates = [] %}
-                
-                {% for date_range in reservation.date_ranges %}
-                    {% if date_range.is_overnight or date_range.purpose == 'pernoctar' %}
-                        {% do overnight_dates.append(date_range) %}
-                    {% else %}
-                        {% do day_use_dates.append(date_range) %}
-                    {% endif %}
-                {% endfor %}
+            </div>            <div class="card-body">
+                {% if overnight_dates or day_use_dates %}
                 
                 {% if overnight_dates %}
                 <h6 class="text-primary"><i class="bi bi-moon-stars me-2"></i>Para pernoctar</h6>
@@ -204,12 +187,36 @@
                     </li>
                     {% endfor %}
                 </ul>
+                {% endif %}                {% if day_use_dates or range_groups %}
+                <h6 class="text-primary"><i class="bi bi-sun me-2"></i>Para uso diurno</h6>
+                
+                {% if range_groups %}
+                <div class="card mb-3 border-light bg-light">
+                    <div class="card-body">
+                        <h6 class="text-primary">
+                            <i class="bi bi-calendar-range me-2"></i>Rangos de fechas
+                        </h6>
+                        {% for people, ranges in range_groups.items() %}
+                            {% for range_item in ranges %}
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <div>
+                                        <span class="badge bg-info me-2">Rango</span>
+                                        {{ range_item['start'].strftime('%d/%m/%Y') }} - 
+                                        {{ range_item['end'].strftime('%d/%m/%Y') }}
+                                        <span class="text-muted ms-1">({{ range_item['days'] }} días)</span>
+                                    </div>
+                                    <span class="badge bg-primary">{{ people }} personas</span>
+                                </div>
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                </div>
                 {% endif %}
                 
-                {% if day_use_dates %}
-                <h6 class="text-primary"><i class="bi bi-sun me-2"></i>Para uso diurno</h6>
+                <h6 class="text-muted small mt-3">Fechas individuales:</h6>
                 <ul class="list-group list-group-flush">
                     {% for date_range in day_use_dates %}
+                    {% if not date_range.purpose or 'rango' not in date_range.purpose %}
                     <li class="list-group-item d-flex justify-content-between align-items-center px-0">
                         <div class="d-flex align-items-center">
                             <i class="bi bi-calendar-day me-2 text-primary"></i>
@@ -217,6 +224,7 @@
                         </div>
                         <span class="badge bg-primary rounded-pill">{{ date_range.num_people }} personas</span>
                     </li>
+                    {% endif %}
                     {% endfor %}
                 </ul>
                 {% endif %}
@@ -228,7 +236,9 @@
                 </div>
                 {% endif %}
             </div>
-        </div><div class="card">
+        </div>
+
+        <div class="card">
             <div class="card-header bg-primary text-white">
                 <h5 class="mb-0">Participantes</h5>
             </div>

@@ -7,8 +7,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="card shadow-sm">
-    <div class="card-header bg-primary text-white py-3">
+<div class="card shadow-sm">    <div class="card-header bg-primary text-white py-3">
         <h2 class="mb-0 d-flex align-items-center">
             <i class="bi bi-clipboard-check me-2"></i>
             Solicitud de Reserva - Estación Biológica Puerto Blest
@@ -21,7 +20,7 @@
                     <i class="bi bi-info-circle"></i>
                 </div>
                 <div>
-                    <p class="mb-0 small">Complete todos los campos marcados con <span class="text-danger">*</span> para enviar su solicitud.</p>
+                    <p class="mb-0 small">Los campos marcados con <span class="text-danger">*</span> son obligatorios.</p>
                 </div>
             </div>
         </div>
@@ -268,13 +267,13 @@
                             <span class="input-group-text bg-transparent"><i class="bi bi-card-text"></i></span>
                             <textarea class="form-control" id="activity_details" name="activity_details" rows="2" placeholder="Describa brevemente la actividad a realizar"></textarea>
                         </div>
-                        <div class="form-text">Detalle qué tipo de actividades se llevarán a cabo durante la estancia</div>
+                        <!-- <div class="form-text">Detalle qué tipo de actividades se llevarán a cabo durante la estancia</div> -->
                     </div>
                     <div class="col-md-12">
-                        <label for="equipment" class="form-label small text-muted">Equipamiento a utilizar</label>
+                        <label for="equipment" class="form-label small text-muted">Infraestructura a utilizar</label>
                         <div class="input-group">
                             <span class="input-group-text bg-transparent"><i class="bi bi-tools"></i></span>
-                            <textarea class="form-control" id="equipment" name="equipment" rows="2" placeholder="Liste el equipamiento que llevará o necesitará"></textarea>
+                            <textarea class="form-control" id="equipment" name="equipment" rows="2" placeholder="Laboratorio, casa huéspedes, ninguna, etc."></textarea>
                         </div>
                     </div>
                     <div class="col-md-12">
@@ -287,14 +286,13 @@
                 </div>
             </div>
 
-            <div class="form-section mt-4 text-center">
-                <div class="alert alert-light border-0 bg-light bg-opacity-50 mb-4">
+            <div class="form-section mt-4 text-center">                <div class="alert alert-light border-0 bg-light bg-opacity-50 mb-4">
                     <div class="d-flex">
                         <div class="me-3 text-primary">
                             <i class="bi bi-shield-check"></i>
                         </div>
                         <div class="text-start">
-                            <p class="mb-0 small">Al enviar este formulario, declara conocer y aceptar el reglamento de uso de la Estación Biológica Puerto Blest.</p>
+                            <p class="mb-0 small">Al enviar este formulario, el equipo docente declara conocer y aceptar el <a href="{{ url_for('static', filename='docs/reglamento.pdf') }}" target="_blank" rel="noopener noreferrer">Reglamento de uso</a> de la Estación Biológica de Puerto Blest.</p>
                         </div>
                     </div>
                 </div>

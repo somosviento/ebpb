@@ -93,7 +93,7 @@ body {
 }
 
 .card-header.bg-primary {
-    background-color: #4285f4 !important;
+    background-color: #607d8b !important; /* Cambiado para coincidir con el navbar */
     color: white;
     border-bottom: none;
 }
@@ -112,27 +112,27 @@ body {
 }
 
 .btn-primary {
-    background-color: #4285f4;
-    border-color: #4285f4;
+    background-color: #607d8b;
+    border-color: #607d8b;
     box-shadow: none;
 }
 
 .btn-primary:hover {
-    background-color: #3b78e7;
-    border-color: #3b78e7;
+    background-color: #546e7a;
+    border-color: #546e7a;
     box-shadow: none;
 }
 
 .btn-outline-primary {
-    color: #4285f4;
+    color: #607d8b;
     border-color: #d6e3fa;
     background-color: transparent;
 }
 
 .btn-outline-primary:hover {
     background-color: #f4f7fd;
-    border-color: #4285f4;
-    color: #3b78e7;
+    border-color: #607d8b;
+    color: #546e7a;
 }
 
 .btn-light {
@@ -168,7 +168,7 @@ body {
 }
 
 .badge.bg-primary {
-    background-color: #4285f4 !important;
+    background-color: #607d8b !important;
 }
 
 .badge.bg-success {
@@ -198,12 +198,13 @@ body {
     border-radius: 3px;
     border: 1px solid #eee;
     margin-bottom: 0.75rem;
-    padding: 0.6rem;
+    padding: 0.75rem;
+    background-color: #f8f9fa;
 }
 
 .date-entry:hover, .participant-entry:hover {
-    border-color: #ddd;
-    background-color: #fafafa;
+    border-color: #607d8b;
+    background-color: #f5f7f8;
 }
 
 /* Mejoras para el formulario minimalista */
@@ -223,8 +224,8 @@ body {
     align-items: center;
     margin-bottom: 1.2rem;
     padding-bottom: 0.5rem;
-    border-bottom: 2px solid rgba(66, 133, 244, 0.1);
-    color: #4285f4;
+    border-bottom: 2px solid rgba(96, 125, 139, 0.1);
+    color: #607d8b;
     font-weight: 500;
     font-size: 1.1rem;
 }
@@ -241,20 +242,22 @@ body {
 .form-control, .form-select {
     font-size: 0.85rem;
     background-color: #f8f9fa;
+    border-color: #ddd;
 }
 
 .form-control:hover, .form-select:hover {
-    box-shadow: 0 0 0 0.1rem rgba(66, 133, 244, 0.1);
+    box-shadow: 0 0 0 0.1rem rgba(96, 125, 139, 0.1);
 }
 
 .form-control:focus, .form-select:focus {
-    border-color: rgba(66, 133, 244, 0.5);
-    box-shadow: 0 0 0 0.15rem rgba(66, 133, 244, 0.15);
+    border-color: rgba(96, 125, 139, 0.5);
+    box-shadow: 0 0 0 0.15rem rgba(96, 125, 139, 0.15);
 }
 
 .form-label {
     font-size: 0.75rem;
     margin-bottom: 0.3rem;
+    color: #607d8b;
 }
 
 .form-text {
@@ -271,40 +274,6 @@ body {
     content: " *";
     color: #ea4335;
     font-weight: bold;
-}
-
-.date-entry {
-    padding: 0.75rem;
-    border-radius: 4px;
-    border: 1px solid #eee;
-    margin-bottom: 0.75rem;
-    transition: all 0.2s ease;
-}
-
-.date-entry:hover {
-    background-color: #f8f9fa;
-    border-color: #e0e0e0;
-}
-
-.participant-entry {
-    border: 1px solid #eee;
-    border-radius: 4px;
-    padding: 0.75rem;
-    margin-bottom: 0.75rem;
-    transition: all 0.2s ease;
-}
-
-.participant-entry:hover {
-    background-color: #f8f9fa;
-    border-color: #e0e0e0;
-}
-
-.form-section-header {
-    background-color: rgba(66, 133, 244, 0.05);
-    border: 1px solid rgba(66, 133, 244, 0.1);
-    border-radius: 4px;
-    padding: 0.75rem;
-    margin-bottom: 1rem;
 }
 
 /* Typography & Text */
@@ -513,7 +482,39 @@ strong {
 
 /* Mejorar aspecto de alerta informativa */
 .alert {
-    border-radius: 8px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    padding: 0.75rem;
+}
+
+.alert-primary {
+    background-color: rgba(96, 125, 139, 0.1);
+    border-color: rgba(96, 125, 139, 0.2);
+    color: #607d8b;
+}
+
+.alert-info {
+    background-color: rgba(79, 195, 247, 0.1);
+    border-color: rgba(79, 195, 247, 0.2);
+    color: #4fc3f7;
+}
+
+.alert-success {
+    background-color: rgba(52, 168, 83, 0.1);
+    border-color: rgba(52, 168, 83, 0.2);
+    color: #34a853;
+}
+
+.alert-warning {
+    background-color: rgba(251, 188, 5, 0.1);
+    border-color: rgba(251, 188, 5, 0.2);
+    color: #fbbc05;
+}
+
+.alert-danger {
+    background-color: rgba(234, 67, 53, 0.1);
+    border-color: rgba(234, 67, 53, 0.2);
+    color: #ea4335;
 }
 
 /* Mejorar estilos de las entradas de fecha y participantes */
@@ -527,14 +528,14 @@ strong {
 
 /* Estilizar botón de enviar solicitud */
 .btn-primary {
-    background-color: #4285f4;
-    border-color: #4285f4;
+    background-color: #607d8b;
+    border-color: #607d8b;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .btn-primary:hover {
-    background-color: #3b78e7;
-    border-color: #3b78e7;
+    background-color: #546e7a;
+    border-color: #546e7a;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
@@ -546,4 +547,12 @@ strong {
     color: #4285f4;
     border-bottom: 1px solid rgba(66, 133, 244, 0.15);
     padding-bottom: 0.5rem;
+}
+
+.form-section-header {
+    background-color: rgba(96, 125, 139, 0.05);
+    border: 1px solid rgba(96, 125, 139, 0.1);
+    border-radius: 4px;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
 }

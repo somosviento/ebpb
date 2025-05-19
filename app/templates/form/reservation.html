@@ -7,8 +7,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="card shadow-sm">
-    <div class="card-header bg-primary text-white py-3">
+<div class="card shadow-sm">    <div class="card-header bg-primary text-white py-3">
         <h2 class="mb-0 d-flex align-items-center">
             <i class="bi bi-clipboard-check me-2"></i>
             Solicitud de Reserva - Estación Biológica Puerto Blest
@@ -21,7 +20,7 @@
                     <i class="bi bi-info-circle"></i>
                 </div>
                 <div>
-                    <p class="mb-0 small">Complete todos los campos marcados con <span class="text-danger">*</span> para enviar su solicitud.</p>
+                    <p class="mb-0 small">Los campos marcados con <span class="text-danger">*</span> son obligatorios.</p>
                 </div>
             </div>
         </div>
@@ -174,7 +173,101 @@
                             <input type="text" class="form-control" id="project_director" name="project_director" placeholder="Nombre del director">
                         </div>
                     </div>
+                    
+                    <!-- Campos específicos para equipo de investigación -->
+                    <div class="col-md-12">
+                        <label for="activity_sites" class="form-label small text-muted form-required">Sitios donde se desarrollarán las actividades</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent"><i class="bi bi-geo-alt"></i></span>
+                            <select class="form-select" id="activity_sites" name="activity_sites[]" multiple size="4">
+                                <option value="bosque">Bosque</option>
+                                <option value="lago">Lago</option>
+                                <option value="rio">Río</option>
+                                <option value="otro">Otro</option>
+                            </select>
+                        </div>
+                        <div class="form-text small">Puede seleccionar múltiples opciones manteniendo presionada la tecla Ctrl (o Cmd en Mac) mientras hace clic</div>
+                    </div>
+                    
+                    <div class="col-md-12 mt-3">
+                        <label for="sites_within_area" class="form-label small text-muted">Sitios donde se desarrollarán las actividades dentro del área</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent"><i class="bi bi-map"></i></span>
+                            <textarea class="form-control" id="sites_within_area" name="sites_within_area" rows="2" placeholder="Detalle los sitios específicos dentro del área donde se desarrollarán las actividades"></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-12">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="requiere_ayudantes" name="requiere_ayudantes">
+                            <label class="form-check-label" for="requiere_ayudantes">
+                                Requiere ayudantes y/o colaboradores
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-12">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="requiere_pasajes_equipo" name="requiere_pasajes_equipo">
+                            <label class="form-check-label" for="requiere_pasajes_equipo">
+                                Requiere gestión de pasajes con descuento
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-12">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="requiere_vianda" name="requiere_vianda">
+                            <label class="form-check-label" for="requiere_vianda">
+                                Requiere servicio de vianda y/o utilizará restaurante del Hotel Puerto Blest
+                            </label>
+                        </div>
+                    </div>
+                </div>            </div>
+              <!-- Rango de fechas -->
+            <div class="form-section">
+                <h4 class="form-section-title">
+                    <i class="bi bi-calendar-range"></i> 
+                    Rango de Fechas para Uso Diurno
+                </h4>
+                <!-- <div class="alert alert-light border-0 bg-light bg-opacity-50 mb-4">
+                    <div class="d-flex">
+                        <div class="me-3 text-primary">
+                            <i class="bi bi-info-circle"></i>
+                        </div>
+                        <div>
+                            <p class="mb-0 small">Seleccione un rango de fechas para el uso diurno de la Estación Biológica. Este rango se usará para reservar días consecutivos para actividades que no requieren pernoctar. <strong>No hay límite de personas</strong> para el uso diurno.</p>
+                        </div>
+                    </div>
+                </div> -->
+                
+                <div class="row g-3">
+                    <div class="col-md-5">
+                        <label class="form-label small text-muted">Fecha desde</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent"><i class="bi bi-calendar-week"></i></span>
+                            <input type="date" class="form-control date-range-picker" id="date_from" name="date_from">
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label small text-muted">Fecha hasta</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent"><i class="bi bi-calendar-week"></i></span>
+                            <input type="date" class="form-control date-range-picker" id="date_to" name="date_to">
+                        </div>
+                    </div>                    <div class="col-md-2">
+                        <label class="form-label small text-muted">Personas</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent"><i class="bi bi-people"></i></span>
+                            <input type="number" class="form-control" id="date_range_people" name="date_range_people" min="1" value="1">
+                        </div>
+                    </div>
                 </div>
+                
+                <!-- <div class="mt-3 text-muted small fst-italic">
+                    <i class="bi bi-info-circle-fill me-1"></i> 
+                    Al seleccionar un rango de fechas, se crearán reservas para todos los días entre la fecha de inicio y fin, inclusive.
+                </div> -->
             </div>
 
             <!-- Fechas de reserva -->
@@ -182,14 +275,13 @@
                 <h4 class="form-section-title">
                     <i class="bi bi-calendar-event"></i> 
                     Fechas de Reserva
-                </h4>                
-                <div class="alert alert-light border-0 bg-light bg-opacity-50 mb-4">
+                </h4>                <div class="alert alert-light border-0 bg-light bg-opacity-50 mb-4">
                     <div class="d-flex">
                         <div class="me-3 text-primary">
                             <i class="bi bi-info-circle"></i>
                         </div>
                         <div>
-                            <p class="mb-0 small">La Estación tiene capacidad máxima para <strong>12 personas</strong> por noche.</p>
+                            <p class="mb-0 small">La Estación tiene capacidad máxima para <strong>12 personas</strong> por noche. <strong>No hay límite de personas</strong> para uso diurno.</p>
                         </div>
                     </div>
                 </div>
@@ -198,7 +290,7 @@
                     <div class="date-entry">
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label class="form-label small text-muted form-required">Fecha</label>
+                                <label class="form-label small text-muted form-required">Fecha para pernoctar</label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-transparent"><i class="bi bi-calendar"></i></span>
                                     <input type="date" class="form-control date-picker" name="date[]" required>
@@ -209,6 +301,7 @@
                                 <div class="input-group">
                                     <span class="input-group-text bg-transparent"><i class="bi bi-people"></i></span>
                                     <input type="number" class="form-control num-people" name="num_people[]" min="1" max="12" value="1" required>
+                                    <div class="input-group-text bg-light text-muted small fw-light">máx. 12</div>
                                 </div>
                             </div>
                             <div class="col-md-2 d-flex align-items-end">
@@ -252,29 +345,33 @@
                 <button type="button" class="btn btn-outline-primary btn-sm" id="add-participant">
                     <i class="bi bi-person-plus me-2"></i> Agregar participante
                 </button>
-            </div>
-
-            <!-- Información adicional -->
+            </div>            <!-- Información adicional -->
             <div class="form-section">
                 <h4 class="form-section-title">
                     <i class="bi bi-file-text"></i>
                     Información Adicional
                 </h4>
-                
-                <div class="row g-3">
+                  <div class="row g-3">
                     <div class="col-md-12">
                         <label for="activity_details" class="form-label small text-muted">Detalles de la actividad</label>
                         <div class="input-group">
                             <span class="input-group-text bg-transparent"><i class="bi bi-card-text"></i></span>
                             <textarea class="form-control" id="activity_details" name="activity_details" rows="2" placeholder="Describa brevemente la actividad a realizar"></textarea>
                         </div>
-                        <div class="form-text">Detalle qué tipo de actividades se llevarán a cabo durante la estancia</div>
+                        <!-- <div class="form-text">Detalle qué tipo de actividades se llevarán a cabo durante la estancia</div> -->
                     </div>
                     <div class="col-md-12">
-                        <label for="equipment" class="form-label small text-muted">Equipamiento a utilizar</label>
+                        <label for="objetivos" class="form-label small text-muted">Objetivos</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent"><i class="bi bi-bullseye"></i></span>
+                            <textarea class="form-control" id="objetivos" name="objetivos" rows="2" placeholder="Describa los objetivos de su estadía"></textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <label for="equipment" class="form-label small text-muted">Infraestructura a utilizar</label>
                         <div class="input-group">
                             <span class="input-group-text bg-transparent"><i class="bi bi-tools"></i></span>
-                            <textarea class="form-control" id="equipment" name="equipment" rows="2" placeholder="Liste el equipamiento que llevará o necesitará"></textarea>
+                            <textarea class="form-control" id="equipment" name="equipment" rows="2" placeholder="Laboratorio, casa huéspedes, ninguna, etc."></textarea>
                         </div>
                     </div>
                     <div class="col-md-12">
@@ -282,6 +379,14 @@
                         <div class="input-group">
                             <span class="input-group-text bg-transparent"><i class="bi bi-chat-left-text"></i></span>
                             <textarea class="form-control" id="observations" name="observations" rows="2" placeholder="Información adicional o requerimientos especiales"></textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-12 mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="requiere_pasajes" name="requiere_pasajes">
+                            <label class="form-check-label" for="requiere_pasajes">
+                                ¿Requiere gestión de pasajes?
+                            </label>
                         </div>
                     </div>
                 </div>
@@ -294,7 +399,7 @@
                             <i class="bi bi-shield-check"></i>
                         </div>
                         <div class="text-start">
-                            <p class="mb-0 small">Al enviar este formulario, declara conocer y aceptar el reglamento de uso de la Estación Biológica Puerto Blest.</p>
+                            <p class="mb-0 small">Al enviar este formulario, el equipo docente declara conocer y aceptar el <a href="{{ url_for('static', filename='/docs/reglamento.pdf') }}" target="_blank" rel="noopener noreferrer">Reglamento de uso</a> de la Estación Biológica de Puerto Blest.</p>
                         </div>
                     </div>
                 </div>
@@ -334,9 +439,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (typeof jQuery === 'undefined') {
         console.error('jQuery no está cargado! Los botones no funcionarán correctamente.');
         return;
-    }
-
-    $(function() {
+    }    $(function() {
         console.log("jQuery está listo, inicializando eventos...");
         
         // Agregar debug para el botón cancelar
@@ -351,10 +454,89 @@ document.addEventListener('DOMContentLoaded', function() {
                 $('#catedraFields').hide();
                 $('#equipoFields').show();
             }
-        });        // Inicializar selector de fechas
+            
+            // Limpiar el contenedor de participantes al cambiar el tipo de reserva
+            $('#participants-container').empty();
+        });
+        
+        // Permitir selección múltiple en el campo de sitios
+        $('#activity_sites').on('click', function(e) {
+            e.stopPropagation();
+        });
+
+        // Inicializar selector de fechas para rango
+        $('.date-range-picker').flatpickr({
+            minDate: "today",
+            dateFormat: "Y-m-d"
+        });
+
+        // Configurar validación para fecha hasta >= fecha desde
+        $('#date_from').on('change', function() {
+            const fromDate = $(this).val();
+            if (fromDate) {
+                $('#date_to').flatpickr({
+                    minDate: fromDate,
+                    dateFormat: "Y-m-d"
+                });
+                
+                // Si ya hay una fecha final seleccionada, verificar que siga siendo válida
+                const toDate = $('#date_to').val();
+                if (toDate && new Date(toDate) < new Date(fromDate)) {
+                    $('#date_to').val(fromDate);
+                    $('#date_to').trigger('change');
+                }
+            }
+        });
+
+        // Validar el formulario antes de enviar
+        $('#reservationForm').on('submit', function(e) {
+            // Validar el rango de fechas si ambos campos están completos
+            const dateFrom = $('#date_from').val();
+            const dateTo = $('#date_to').val();
+            const dateRangePeople = $('#date_range_people').val();
+            
+            if ((dateFrom || dateTo) && !(dateFrom && dateTo && dateRangePeople)) {
+                e.preventDefault();
+                showAlertModal(
+                    'Rango de fechas incompleto', 
+                    'Por favor complete todos los campos del rango de fechas (desde, hasta y cantidad de personas) o deje todos vacíos.',
+                    'Entendido',
+                    'btn-warning'
+                );
+                return false;
+            }
+            
+            // Si ambas fechas están completas, verificar que la fecha final sea posterior a la inicial
+            if (dateFrom && dateTo) {
+                if (new Date(dateTo) < new Date(dateFrom)) {
+                    e.preventDefault();
+                    showAlertModal(
+                        'Error en el rango de fechas', 
+                        'La fecha final debe ser igual o posterior a la fecha inicial.',
+                        'Entendido',
+                        'btn-danger'
+                    );
+                    return false;
+                }
+            }
+            
+            return true;
+        });
+
+        // Inicializar selector de fechas individuales
         $('.date-picker').flatpickr({
             minDate: "today",
             dateFormat: "Y-m-d"
+        });
+        
+        // Inicializar selector de fecha de nacimiento
+        $(document).on('focus', '.participant-birth-date', function() {
+            if (!$(this).data('flatpickr')) {
+                $(this).flatpickr({
+                    dateFormat: "Y-m-d",
+                    maxDate: "today" // La fecha de nacimiento no puede ser en el futuro
+                });
+            }
         });
         
         // Asegurarnos de que initConfirmations esté inicializado para manejar los eventos de confirmación
@@ -374,7 +556,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="date-entry">
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="form-label small text-muted form-required">Fecha</label>
+                            <label class="form-label small text-muted form-required">Fecha para pernoctar</label>
                             <div class="input-group">
                                 <span class="input-group-text bg-transparent"><i class="bi bi-calendar"></i></span>
                                 <input type="date" class="form-control date-picker" name="date[]" required>
@@ -385,6 +567,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="input-group">
                                 <span class="input-group-text bg-transparent"><i class="bi bi-people"></i></span>
                                 <input type="number" class="form-control num-people" name="num_people[]" min="1" max="12" value="1" required>
+                                <div class="input-group-text bg-light text-muted small fw-light">máx. 12</div>
                             </div>
                         </div>
                         <div class="col-md-2 d-flex align-items-end">
@@ -405,13 +588,15 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });        // ===== ELIMINAR FECHA =====
         // Nota: Este evento se maneja ahora en confirmation.js 
-        // para mostrar el modal de confirmación antes de eliminar
-
-        // ===== AGREGAR PARTICIPANTE =====
+        // para mostrar el modal de confirmación antes de eliminar        // ===== AGREGAR PARTICIPANTE =====
         $('#add-participant').on('click', function() {
             console.log("Botón agregar participante clickeado");
             
-            const participantHtml = `
+            // Comprobar el tipo de formulario seleccionado
+            const isEquipoForm = $('input[name="reservation_type"]:checked').val() === 'equipo';
+            
+            // Definir la estructura del HTML según el tipo de formulario
+            const participantCommonFields = `
                 <div class="participant-entry">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <div>
@@ -436,6 +621,10 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <input type="text" class="form-control" name="participant_dni[]" placeholder="Número de identificación" required>
                             </div>
                         </div>
+            `;
+            
+            // Campos específicos de Cátedra (Rol)
+            const catedraFields = `
                         <div class="col-md-4">
                             <label class="form-label small text-muted form-required">Rol</label>
                             <div class="input-group">
@@ -447,6 +636,34 @@ document.addEventListener('DOMContentLoaded', function() {
                                 </select>
                             </div>
                         </div>
+            `;
+              // Campos específicos de Equipo (Institución, Cargo, Nacionalidad)
+            const equipoFields = `
+                        <div class="col-md-6">
+                            <label class="form-label small text-muted form-required">Institución</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-transparent"><i class="bi bi-building"></i></span>
+                                <input type="text" class="form-control" name="participant_institution[]" placeholder="Institución de pertenencia" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small text-muted form-required">Cargo</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-transparent"><i class="bi bi-person-vcard"></i></span>
+                                <input type="text" class="form-control" name="participant_cargo[]" placeholder="Cargo o función" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small text-muted form-required">Nacionalidad</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-transparent"><i class="bi bi-flag"></i></span>
+                                <input type="text" class="form-control" name="participant_nacionalidad[]" placeholder="País de origen" required>
+                            </div>
+                        </div>
+            `;
+            
+            // Campos comunes adicionales
+            const commonAdditionalFields = `
                         <div class="col-md-4">
                             <label class="form-label small text-muted">Email</label>
                             <div class="input-group">
@@ -461,9 +678,52 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <input type="text" class="form-control" name="participant_phone[]" placeholder="+54 000 0000000">
                             </div>
                         </div>
+                        <div class="col-md-6">
+                            <label class="form-label small text-muted">Fecha de nacimiento</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-transparent"><i class="bi bi-calendar"></i></span>
+                                <input type="date" class="form-control participant-birth-date" name="participant_birth_date[]">
+                            </div>
+                        </div>
                     </div>
                 </div>
             `;
+            
+            // Construir el HTML final según el tipo de formulario
+            let participantHtml;
+            if (isEquipoForm) {                // Para Equipo de Investigación, no incluir el campo CUIL
+                const equipoAdditionalFields = `
+                        <div class="col-md-6">
+                            <label class="form-label small text-muted">Email</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-transparent"><i class="bi bi-envelope"></i></span>
+                                <input type="email" class="form-control" name="participant_email[]" placeholder="correo@ejemplo.com">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small text-muted">Teléfono</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-transparent"><i class="bi bi-telephone"></i></span>
+                                <input type="text" class="form-control" name="participant_phone[]" placeholder="+54 000 0000000">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small text-muted">Fecha de nacimiento</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-transparent"><i class="bi bi-calendar"></i></span>
+                                <input type="date" class="form-control participant-birth-date" name="participant_birth_date[]">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <!-- Espacio intencional para mantener dos campos por línea -->
+                        </div>
+                    </div>
+                </div>
+                `;
+                participantHtml = participantCommonFields + equipoFields + equipoAdditionalFields;
+            } else {
+                participantHtml = participantCommonFields + catedraFields + commonAdditionalFields;
+            }
             $('#participants-container').append(participantHtml);
         });        /* 
         // Esta función se ha trasladado a confirmation.js para usar el modal de confirmación

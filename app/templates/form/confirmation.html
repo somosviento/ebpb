@@ -42,16 +42,55 @@
                             Equipo de Investigación - {{ reservation.project_name }}
                         {% endif %}
                     </td>
-                </tr>
-                <tr>
+                </tr>                <tr>
                     <th>Fechas:</th>
                     <td>
                         <ul class="mb-0">
+                            {% set overnight_dates = [] %}
+                            {% set day_use_dates = [] %}
+                            
                             {% for date_range in reservation.date_ranges %}
-                                <li>{{ date_range.date.strftime('%d/%m/%Y') }} - {{ date_range.num_people }} personas</li>
+                                {% if date_range.is_overnight or date_range.purpose == 'pernoctar' %}
+                                    {% do overnight_dates.append(date_range) %}
+                                {% else %}
+                                    {% do day_use_dates.append(date_range) %}
+                                {% endif %}
                             {% endfor %}
+                            
+                            {% if overnight_dates %}
+                                <strong>Para pernoctar:</strong>
+                                {% for date_range in overnight_dates %}
+                                    <li>{{ date_range.date.strftime('%d/%m/%Y') }} - {{ date_range.num_people }} personas</li>
+                                {% endfor %}
+                            {% endif %}
+                            
+                            {% if day_use_dates %}
+                                <strong>Para uso diurno:</strong>
+                                {% for date_range in day_use_dates %}
+                                    <li>{{ date_range.date.strftime('%d/%m/%Y') }} - {{ date_range.num_people }} personas</li>
+                                {% endfor %}
+                            {% endif %}
                         </ul>
                     </td>
+                </tr><tr>
+                    <th>Detalles de la actividad:</th>
+                    <td>{{ reservation.activity_details if reservation.activity_details else "No especificado" }}</td>
+                </tr>
+                <tr>
+                    <th>Objetivos:</th>
+                    <td>{{ reservation.objetivos if reservation.objetivos else "No especificado" }}</td>
+                </tr>
+                <tr>
+                    <th>Infraestructura a utilizar:</th>
+                    <td>{{ reservation.equipment if reservation.equipment else "No especificado" }}</td>
+                </tr>
+                <tr>
+                    <th>Observaciones:</th>
+                    <td>{{ reservation.observations if reservation.observations else "No especificado" }}</td>
+                </tr>
+                <tr>
+                    <th>Requiere gestión de pasajes:</th>
+                    <td>{{ "Sí" if reservation.requiere_pasajes else "No" }}</td>
                 </tr>
             </table>
         </div>

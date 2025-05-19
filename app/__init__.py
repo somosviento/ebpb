@@ -15,12 +15,14 @@ login_manager = LoginManager()
 def create_app():
     # Cargar variables de entorno
     load_dotenv()
-    
-    # Inicializar la aplicación Flask
+      # Inicializar la aplicación Flask
     app = Flask(__name__)
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-key-for-development')
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI', 'sqlite:///ebpb.db')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    
+    # Habilitar extensión 'do' en Jinja2
+    app.jinja_env.add_extension('jinja2.ext.do')
     
     # Inicializar extensiones
     db.init_app(app)

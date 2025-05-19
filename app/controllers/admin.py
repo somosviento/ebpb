@@ -128,8 +128,29 @@ def edit_reservation(reservation_id):
             reservation.postal_address = request.form.get('postal_address')
             reservation.institution = request.form.get('institution')
             reservation.parks_permit_number = request.form.get('parks_permit_number')
+              # Actualizar el tipo de reserva (ahora permitimos cambiar el tipo)
+            new_type = request.form.get('reservation_type')
+            if new_type != reservation.reservation_type:
+                # Si se cambia el tipo, limpiar campos específicos del tipo anterior
+                if new_type == 'catedra':
+                    # Limpiar campos de equipo de investigación
+                    reservation.project_name = None
+                    reservation.project_code = None
+                    reservation.project_director = None
+                    reservation.activity_sites = None
+                    reservation.sites_within_area = None
+                    reservation.requiere_ayudantes = False
+                    reservation.requiere_pasajes_equipo = False
+                    reservation.requiere_vianda = False
+                else:  # cambio a equipo de investigación
+                    # Limpiar campos de cátedra
+                    reservation.department = None
+                    reservation.subject = None
+                
+                # Actualizar el tipo
+                reservation.reservation_type = new_type
             
-            # Actualizar campos según el tipo de reserva
+            # Actualizar campos según el tipo de reserva (después del cambio)
             if reservation.reservation_type == 'catedra':
                 reservation.department = request.form.get('department')
                 reservation.subject = request.form.get('subject')
@@ -261,8 +282,7 @@ def edit_reservation(reservation_id):
                             birth_date = datetime.strptime(participant_birth_dates[i], '%Y-%m-%d').date()
                         except:
                             pass  # Si hay un error, dejamos la fecha como None
-                    
-                    # Si es tipo equipo de investigación usamos los campos específicos
+                      # Usar los campos adecuados según el tipo de reserva (después del posible cambio)
                     if reservation.reservation_type == 'equipo':
                         participant_institution = participant_institutions[i] if i < len(participant_institutions) else reservation.institution
                         participant_cargo = participant_cargos[i] if i < len(participant_cargos) else None
@@ -325,7 +345,7 @@ def edit_reservation(reservation_id):
             db.session.rollback()
             flash(f'Error al actualizar la reserva: {str(e)}', 'danger')
     
-    return render_template('admin/edit_reservation.html', reservation=reservation)
+    return render_template('admin/edit_reservation_updated.html', reservation=reservation)
 
 @admin_bp.route('/reservation/<int:reservation_id>/delete', methods=['POST'])
 @login_required

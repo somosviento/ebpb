@@ -3,7 +3,6 @@
 {% block title %}Editar Reserva{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 {% endblock %}
 
@@ -368,8 +367,7 @@
                 dateFormat: "Y-m-d"
             });
         }
-        
-        // Agregar fecha para pernoctar
+          // Agregar fecha para pernoctar
         $('#add-overnight-date').click(function() {
             addDateEntry('#overnight-dates-container', 'overnight', 'bi-calendar');
         });
@@ -377,7 +375,9 @@
         // Agregar fecha para uso diurno
         $('#add-day-use-date').click(function() {
             addDateEntry('#day-use-dates-container', 'day_use', 'bi-calendar-day');
-        });// La funcionalidad de eliminar fecha se maneja ahora en el script confirmation.js
+        });
+        
+        // La funcionalidad de eliminar fecha se maneja ahora en el script confirmation.js
         // El método initRemoveDateButtons() reemplaza este código
 
         // Agregar participante
@@ -435,7 +435,7 @@
                     data: {
                         date: date,
                         num_people: numPeople,
-                        reservation_id: {{ reservation.id }},  // Para excluir la reserva actual
+                        reservation_id: "{{ reservation.id }}",  // Para excluir la reserva actual
                         is_overnight: isOvernight
                     },
                     success: function(response) {

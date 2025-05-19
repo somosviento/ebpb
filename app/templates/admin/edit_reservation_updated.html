@@ -3,7 +3,6 @@
 {% block title %}Editar Reserva{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 {% endblock %}
 
@@ -20,183 +19,453 @@
         <h5 class="mb-0">Formulario de Edición</h5>
     </div>
     <div class="card-body">
-        <form id="editReservationForm" method="POST" action="{{ url_for('admin.edit_reservation', reservation_id=reservation.id) }}">
-            <!-- Tipo de formulario (solo mostrar, no editar) -->
-            <div class="mb-4">
-                <h4>Tipo de Reserva</h4>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="reservation_type" id="typeCatedra" value="catedra" {% if reservation.reservation_type == 'catedra' %}checked{% endif %} disabled>
-                    <label class="form-check-label" for="typeCatedra">Cátedra</label>
+        <form id="editReservationForm" method="POST" action="{{ url_for('admin.edit_reservation', reservation_id=reservation.id) }}">            <!-- Tipo de formulario -->
+            <div class="form-section mb-4">
+                <h4 class="form-section-title">
+                    <i class="bi bi-bookmark"></i> Tipo de Reserva
+                </h4>
+                <div class="form-section-header">
+                    <div class="d-flex flex-wrap">
+                        <div class="form-check form-check-inline me-4">
+                            <input class="form-check-input" type="radio" name="reservation_type" id="typeCatedra" value="catedra" {% if reservation.reservation_type == 'catedra' %}checked{% endif %}>
+                            <label class="form-check-label" for="typeCatedra">
+                                <span class="d-flex align-items-center">
+                                    Cátedra
+                                </span>
+                            </label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="reservation_type" id="typeEquipo" value="equipo" {% if reservation.reservation_type == 'equipo' %}checked{% endif %}>
+                            <label class="form-check-label" for="typeEquipo">
+                                <span class="d-flex align-items-center">
+                                    Equipo de Investigación
+                                </span>
+                            </label>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="reservation_type" id="typeEquipo" value="equipo" {% if reservation.reservation_type == 'equipo' %}checked{% endif %} disabled>
-                    <label class="form-check-label" for="typeEquipo">Equipo de Investigación</label>
-                </div>
-                <input type="hidden" name="reservation_type" value="{{ reservation.reservation_type }}">
-            </div>
-
-            <!-- Datos del responsable -->
-            <div class="mb-4">
-                <h4>Datos del Responsable</h4>
+            </div>            <!-- Datos del responsable -->
+            <div class="form-section mb-4">
+                <h4 class="form-section-title">
+                    <i class="bi bi-person-badge"></i> 
+                    Datos del Responsable
+                </h4>
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <label for="person_in_charge" class="form-label">Nombre y Apellido *</label>
-                        <input type="text" class="form-control" id="person_in_charge" name="person_in_charge" value="{{ reservation.person_in_charge }}" required>
+                        <label for="person_in_charge" class="form-label small text-muted form-required">Nombre y Apellido</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent"><i class="bi bi-person"></i></span>
+                            <input type="text" class="form-control" id="person_in_charge" name="person_in_charge" value="{{ reservation.person_in_charge }}" required>
+                        </div>
                     </div>
                     <div class="col-md-6">
-                        <label for="dni" class="form-label">DNI/Pasaporte *</label>
-                        <input type="text" class="form-control" id="dni" name="dni" value="{{ reservation.dni }}" required>
+                        <label for="dni" class="form-label small text-muted form-required">DNI/Pasaporte</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent"><i class="bi bi-card-text"></i></span>
+                            <input type="text" class="form-control" id="dni" name="dni" value="{{ reservation.dni }}" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="email" class="form-label small text-muted form-required">Correo electrónico</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent"><i class="bi bi-envelope"></i></span>
+                            <input type="email" class="form-control" id="email" name="email" value="{{ reservation.email }}" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="alternative_email" class="form-label small text-muted">Correo electrónico alternativo</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent"><i class="bi bi-envelope"></i></span>
+                            <input type="email" class="form-control" id="alternative_email" name="alternative_email" value="{{ reservation.alternative_email }}">
+                        </div>
                     </div>                    <div class="col-md-6">
-                        <label for="email" class="form-label">Correo electrónico *</label>
-                        <input type="email" class="form-control" id="email" name="email" value="{{ reservation.email }}" required>
+                        <label for="phone" class="form-label small text-muted form-required">Teléfono</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent"><i class="bi bi-telephone"></i></span>
+                            <input type="text" class="form-control" id="phone" name="phone" value="{{ reservation.phone }}" required>
+                        </div>
                     </div>
                     <div class="col-md-6">
-                        <label for="alternative_email" class="form-label">Correo electrónico alternativo</label>
-                        <input type="email" class="form-control" id="alternative_email" name="alternative_email" value="{{ reservation.alternative_email }}">
+                        <label for="institution" class="form-label small text-muted form-required">Institución</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent"><i class="bi bi-building"></i></span>
+                            <input type="text" class="form-control" id="institution" name="institution" value="{{ reservation.institution }}" required>
+                        </div>
                     </div>
                     <div class="col-md-6">
-                        <label for="phone" class="form-label">Teléfono *</label>
-                        <input type="text" class="form-control" id="phone" name="phone" value="{{ reservation.phone }}" required>
+                        <label for="parks_permit_number" class="form-label small text-muted">Permiso de Parques Nacionales</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent"><i class="bi bi-file-earmark-text"></i></span>
+                            <input type="text" class="form-control" id="parks_permit_number" name="parks_permit_number" value="{{ reservation.parks_permit_number }}">
+                        </div>
                     </div>
                     <div class="col-md-6">
-                        <label for="institution" class="form-label">Institución *</label>
-                        <input type="text" class="form-control" id="institution" name="institution" value="{{ reservation.institution }}" required>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="parks_permit_number" class="form-label">Número de Permiso de Parques Nacionales</label>
-                        <input type="text" class="form-control" id="parks_permit_number" name="parks_permit_number" value="{{ reservation.parks_permit_number }}">
-                    </div>                    <div class="col-md-6">
-                        <label for="postal_address" class="form-label">Dirección Postal *</label>
-                        <input type="text" class="form-control" id="postal_address" name="postal_address" value="{{ reservation.postal_address }}" required>
+                        <label for="postal_address" class="form-label small text-muted form-required">Dirección Postal</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent"><i class="bi bi-geo-alt"></i></span>
+                            <input type="text" class="form-control" id="postal_address" name="postal_address" value="{{ reservation.postal_address }}" required>
+                        </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- Datos específicos según tipo -->
-            {% if reservation.reservation_type == 'catedra' %}
-            <div class="mb-4" id="catedraFields">
-                <h4>Información de la Cátedra</h4>
+            </div>            <!-- Datos específicos según tipo -->
+            <!-- Campos para Cátedra -->
+            <div class="form-section mb-4" id="catedraFields" {% if reservation.reservation_type != 'catedra' %}style="display: none;"{% endif %}>
+                <h4 class="form-section-title">
+                    <i class="bi bi-book"></i>
+                    Información de la Cátedra
+                </h4>
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <label for="department" class="form-label">Departamento *</label>
-                        <input type="text" class="form-control" id="department" name="department" value="{{ reservation.department }}" required>
+                        <label for="department" class="form-label small text-muted form-required">Departamento</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent"><i class="bi bi-building"></i></span>
+                            <input type="text" class="form-control" id="department" name="department" value="{{ reservation.department or '' }}" {% if reservation.reservation_type == 'catedra' %}required{% endif %}>
+                        </div>
                     </div>
                     <div class="col-md-6">
-                        <label for="subject" class="form-label">Asignatura *</label>
-                        <input type="text" class="form-control" id="subject" name="subject" value="{{ reservation.subject }}" required>
+                        <label for="subject" class="form-label small text-muted form-required">Asignatura</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent"><i class="bi bi-journal-text"></i></span>
+                            <input type="text" class="form-control" id="subject" name="subject" value="{{ reservation.subject or '' }}" {% if reservation.reservation_type == 'catedra' %}required{% endif %}>
+                        </div>
                     </div>
                 </div>
             </div>
-            {% else %}
-            <div class="mb-4" id="equipoFields">
-                <h4>Información del Proyecto</h4>
+            <!-- Campos para Equipo de Investigación -->
+            <div class="form-section mb-4" id="equipoFields" {% if reservation.reservation_type != 'equipo' %}style="display: none;"{% endif %}>
+                <h4 class="form-section-title">
+                    <i class="bi bi-folder-check"></i>
+                    Información del Proyecto
+                </h4>
                 <div class="row g-3">
                     <div class="col-md-12">
-                        <label for="project_name" class="form-label">Nombre del Proyecto *</label>
-                        <input type="text" class="form-control" id="project_name" name="project_name" value="{{ reservation.project_name }}" required>
+                        <label for="project_name" class="form-label small text-muted form-required">Nombre del Proyecto</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent"><i class="bi bi-clipboard-check"></i></span>
+                            <input type="text" class="form-control" id="project_name" name="project_name" value="{{ reservation.project_name or '' }}" {% if reservation.reservation_type == 'equipo' %}required{% endif %}>
+                        </div>
                     </div>
                     <div class="col-md-6">
-                        <label for="project_code" class="form-label">Código del Proyecto *</label>
-                        <input type="text" class="form-control" id="project_code" name="project_code" value="{{ reservation.project_code }}" required>
+                        <label for="project_code" class="form-label small text-muted form-required">Código del Proyecto</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent"><i class="bi bi-hash"></i></span>
+                            <input type="text" class="form-control" id="project_code" name="project_code" value="{{ reservation.project_code or '' }}" {% if reservation.reservation_type == 'equipo' %}required{% endif %}>
+                        </div>
                     </div>
                     <div class="col-md-6">
-                        <label for="project_director" class="form-label">Director del Proyecto *</label>
-                        <input type="text" class="form-control" id="project_director" name="project_director" value="{{ reservation.project_director }}" required>
+                        <label for="project_director" class="form-label small text-muted form-required">Director del Proyecto</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent"><i class="bi bi-person-badge"></i></span>
+                            <input type="text" class="form-control" id="project_director" name="project_director" value="{{ reservation.project_director or '' }}" {% if reservation.reservation_type == 'equipo' %}required{% endif %}>
+                        </div>
+                    </div>
+                    
+                    <!-- Campos específicos para equipo de investigación -->
+                    <div class="col-md-12">
+                        <label for="activity_sites" class="form-label small text-muted form-required">Sitios donde se desarrollarán las actividades</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent"><i class="bi bi-geo-alt"></i></span>
+                            <select class="form-select" id="activity_sites" name="activity_sites[]" multiple size="4" {% if reservation.reservation_type == 'equipo' %}required{% endif %}>
+                                {% set activity_sites = reservation.activity_sites.split(',') if reservation.activity_sites else [] %}
+                                <option value="bosque" {% if 'bosque' in activity_sites %}selected{% endif %}>Bosque</option>
+                                <option value="lago" {% if 'lago' in activity_sites %}selected{% endif %}>Lago</option>
+                                <option value="rio" {% if 'rio' in activity_sites %}selected{% endif %}>Río</option>
+                                <option value="otro" {% if 'otro' in activity_sites %}selected{% endif %}>Otro</option>
+                            </select>
+                        </div>
+                        <div class="form-text small">Puede seleccionar múltiples opciones manteniendo presionada la tecla Ctrl (o Cmd en Mac) mientras hace clic</div>
+                    </div>
+                    
+                    <div class="col-md-12">
+                        <label for="sites_within_area" class="form-label small text-muted">Sitios donde se desarrollarán las actividades dentro del área</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent"><i class="bi bi-map"></i></span>
+                            <textarea class="form-control" id="sites_within_area" name="sites_within_area" rows="2">{{ reservation.sites_within_area or '' }}</textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-12 mt-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="requiere_ayudantes" name="requiere_ayudantes" {% if reservation.requiere_ayudantes %}checked{% endif %}>
+                            <label class="form-check-label" for="requiere_ayudantes">
+                                Requiere ayudantes y/o colaboradores
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-12">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="requiere_pasajes_equipo" name="requiere_pasajes_equipo" {% if reservation.requiere_pasajes_equipo %}checked{% endif %}>
+                            <label class="form-check-label" for="requiere_pasajes_equipo">
+                                Requiere gestión de pasajes para el equipo
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-12">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="requiere_vianda" name="requiere_vianda" {% if reservation.requiere_vianda %}checked{% endif %}>
+                            <label class="form-check-label" for="requiere_vianda">
+                                Requiere vianda
+                            </label>
+                        </div>
                     </div>
                 </div>
             </div>
-            {% endif %}
 
             <!-- Fechas de reserva -->
-            <div class="mb-4">
-                <h4>Fechas de Reserva</h4>
-                <p class="text-muted">La Estación tiene capacidad máxima para 12 personas por noche.</p>
+            <div class="form-section mb-4">
+                <h4 class="form-section-title">
+                    <i class="bi bi-calendar-range"></i> 
+                    Fechas de Reserva
+                </h4>
+                <div class="alert alert-light border-0 bg-light bg-opacity-50 mb-4">
+                    <div class="d-flex">
+                        <div class="me-3 text-primary">
+                            <i class="bi bi-info-circle"></i>
+                        </div>
+                        <div>
+                            <p class="mb-0 small">La Estación tiene capacidad máxima para 12 personas por noche.</p>
+                        </div>
+                    </div>
+                </div>
                 
-                <div id="dates-container">
-                    {% for date_range in reservation.date_ranges %}
-                    <div class="date-entry row g-3 mb-2">
+                <!-- Fechas para pernoctar -->
+                <h5 class="mt-4 mb-3">Fechas para pernoctar</h5>
+                <div id="overnight-dates-container">
+                    {% for date_range in overnight_dates %}
+                    <div class="overnight-date-entry row g-3 mb-2">
                         <div class="col-md-6">
-                            <label class="form-label">Fecha</label>
-                            <input type="date" class="form-control date-picker" name="date[]" value="{{ date_range.date.strftime('%Y-%m-%d') }}" required>
+                            <label class="form-label small text-muted">Fecha</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-transparent"><i class="bi bi-calendar-week"></i></span>
+                                <input type="date" class="form-control date-picker" name="overnight_date[]" value="{{ date_range.date.strftime('%Y-%m-%d') }}" required>
+                            </div>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">Cantidad de personas</label>
-                            <input type="number" class="form-control num-people" name="num_people[]" min="1" max="12" value="{{ date_range.num_people }}" required>
-                        </div>                        <div class="col-md-2 d-flex align-items-end">
-                            <button type="button" class="btn btn-outline-danger remove-date w-100">
-                                <i class="bi bi-trash"></i>
+                            <label class="form-label small text-muted">Cantidad de personas</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-transparent"><i class="bi bi-people"></i></span>
+                                <input type="number" class="form-control overnight-num-people" name="overnight_num_people[]" min="1" max="12" value="{{ date_range.num_people }}" required>
+                            </div>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="button" class="btn btn-outline-danger remove-overnight-date w-100">
+                                <i class="bi bi-trash"></i> Eliminar
                             </button>
                         </div>
                     </div>
                     {% endfor %}
                 </div>
                 
-                <button type="button" class="btn btn-secondary mt-2" id="add-date">Agregar otra fecha</button>
-            </div>
-
-            <!-- Participantes -->
-            <div class="mb-4">
-                <h4>Participantes</h4>
-                <p class="text-muted">Agregue los datos de los demás participantes (sin incluir al responsable).</p>
+                <button type="button" class="btn btn-outline-secondary mt-2" id="add-overnight-date">
+                    <i class="bi bi-plus-circle"></i> Agregar Fecha para Pernoctar
+                </button>
                 
-                <div id="participants-container">
-                    {% for participant in reservation.participants %}
-                    <div class="participant-entry card mb-3">
-                        <div class="card-body">
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label class="form-label">Nombre y Apellido *</label>
-                                    <input type="text" class="form-control" name="participant_name[]" value="{{ participant.name }}" required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">DNI/Pasaporte *</label>
-                                    <input type="text" class="form-control" name="participant_dni[]" value="{{ participant.dni }}" required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Email</label>
-                                    <input type="email" class="form-control" name="participant_email[]" value="{{ participant.email }}">
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Teléfono</label>
-                                    <input type="text" class="form-control" name="participant_phone[]" value="{{ participant.phone }}">
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Rol *</label>
-                                    <select class="form-select" name="participant_role[]" required>
-                                        <option value="">Seleccionar...</option>
-                                        <option value="docente" {% if participant.role == 'docente' %}selected{% endif %}>Docente</option>
-                                        <option value="estudiante" {% if participant.role == 'estudiante' %}selected{% endif %}>Estudiante</option>
-                                    </select>
-                                </div>
+                <!-- Fechas para uso diurno -->
+                <h5 class="mt-4 mb-3">Fechas para uso diurno</h5>
+                <div id="day-use-dates-container">
+                    {% for date_range in day_use_dates %}
+                    <div class="day-use-date-entry row g-3 mb-2">
+                        <div class="col-md-6">
+                            <label class="form-label small text-muted">Fecha</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-transparent"><i class="bi bi-calendar-week"></i></span>
+                                <input type="date" class="form-control date-picker" name="day_use_date[]" value="{{ date_range.date.strftime('%Y-%m-%d') }}" required>
                             </div>
-                            <button type="button" class="btn btn-sm btn-danger mt-3 remove-participant">Eliminar participante</button>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small text-muted">Cantidad de personas</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-transparent"><i class="bi bi-people"></i></span>
+                                <input type="number" class="form-control day-use-num-people" name="day_use_num_people[]" min="1" value="{{ date_range.num_people }}" required>
+                            </div>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="button" class="btn btn-outline-danger remove-day-use-date w-100">
+                                <i class="bi bi-trash"></i> Eliminar
+                            </button>
                         </div>
                     </div>
                     {% endfor %}
                 </div>
                 
-                <button type="button" class="btn btn-secondary mt-2" id="add-participant">Agregar participante</button>
+                <button type="button" class="btn btn-outline-secondary mt-2" id="add-day-use-date">
+                    <i class="bi bi-plus-circle"></i> Agregar Fecha para Uso Diurno
+                </button>
+                
+                <!-- Rango de fechas para uso diurno -->
+                <h5 class="mt-4 mb-3">Rango de fechas para uso diurno</h5>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label small text-muted">Fecha desde</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent"><i class="bi bi-calendar-week"></i></span>
+                            <input type="date" class="form-control date-range-picker" id="date_from" name="date_from">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small text-muted">Fecha hasta</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent"><i class="bi bi-calendar-week"></i></span>
+                            <input type="date" class="form-control date-range-picker" id="date_to" name="date_to">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small text-muted">Cantidad de personas</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent"><i class="bi bi-people"></i></span>
+                            <input type="number" class="form-control" id="date_range_people" name="date_range_people" min="1">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Participantes -->
+            <div class="form-section mb-4">
+                <h4 class="form-section-title">
+                    <i class="bi bi-people"></i> 
+                    Participantes
+                </h4>
+                
+                <div class="alert alert-light border-0 bg-light bg-opacity-50 mb-3">
+                    <div class="d-flex">
+                        <div class="me-3 text-primary">
+                            <i class="bi bi-info-circle"></i>
+                        </div>
+                        <div>
+                            <p class="mb-0 small">Agregue los datos de los demás participantes (sin incluir al responsable).</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="participants-container" class="mb-3">
+                    {% for participant in reservation.participants %}
+                    <div class="participant-entry card mb-3">
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label small text-muted form-required">Nombre y Apellido</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-transparent"><i class="bi bi-person"></i></span>
+                                        <input type="text" class="form-control" name="participant_name[]" value="{{ participant.name }}" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small text-muted form-required">DNI/Pasaporte</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-transparent"><i class="bi bi-card-text"></i></span>
+                                        <input type="text" class="form-control" name="participant_dni[]" value="{{ participant.dni }}" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <label class="form-label small text-muted">Cargo/Rol</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-transparent"><i class="bi bi-briefcase"></i></span>
+                                        <input type="text" class="form-control" name="participant_role[]" value="{{ participant.role }}">
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <label class="form-label small text-muted">Nacionalidad</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-transparent"><i class="bi bi-globe"></i></span>
+                                        <input type="text" class="form-control" name="participant_nationality[]" value="{{ participant.nationality }}">
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-12">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="participant_team_member[]" {% if participant.team_member %}checked{% endif %}>
+                                        <label class="form-check-label">
+                                            Forma parte del equipo del solicitante
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-12 d-flex justify-content-end">
+                                    <button type="button" class="btn btn-outline-danger remove-participant">
+                                        <i class="bi bi-trash"></i> Eliminar participante
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <button type="button" class="btn btn-outline-primary btn-sm" id="add-participant">
+                    <i class="bi bi-person-plus me-2"></i> Agregar participante
+                </button>
             </div>
 
             <!-- Información adicional -->
-            <div class="mb-4">
-                <h4>Información Adicional</h4>
-                <div class="mb-3">
-                    <label for="activity_details" class="form-label">Detalles de la actividad</label>
-                    <textarea class="form-control" id="activity_details" name="activity_details" rows="3">{{ reservation.activity_details }}</textarea>
-                </div>
-                <div class="mb-3">
-                    <label for="equipment" class="form-label">Infraestructura a utilizar</label>
-                    <textarea class="form-control" id="equipment" name="equipment" rows="3">{{ reservation.equipment }}</textarea>
-                </div>
-                <div class="mb-3">
-                    <label for="observations" class="form-label">Observaciones</label>
-                    <textarea class="form-control" id="observations" name="observations" rows="3">{{ reservation.observations }}</textarea>
+            <div class="form-section mb-4">
+                <h4 class="form-section-title">
+                    <i class="bi bi-file-text"></i>
+                    Información Adicional
+                </h4>
+                <div class="row g-3">
+                    <div class="col-md-12">
+                        <label for="activity_details" class="form-label small text-muted">Detalles de la actividad</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent"><i class="bi bi-card-text"></i></span>
+                            <textarea class="form-control" id="activity_details" name="activity_details" rows="2">{{ reservation.activity_details }}</textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <label for="objetivos" class="form-label small text-muted">Objetivos</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent"><i class="bi bi-bullseye"></i></span>
+                            <textarea class="form-control" id="objetivos" name="objetivos" rows="2">{{ reservation.objetivos }}</textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <label for="equipment" class="form-label small text-muted">Infraestructura a utilizar</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent"><i class="bi bi-tools"></i></span>
+                            <textarea class="form-control" id="equipment" name="equipment" rows="2">{{ reservation.equipment }}</textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <label for="observations" class="form-label small text-muted">Observaciones</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent"><i class="bi bi-chat-left-text"></i></span>
+                            <textarea class="form-control" id="observations" name="observations" rows="2">{{ reservation.observations }}</textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-12 mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="requiere_pasajes" name="requiere_pasajes" {% if reservation.requiere_pasajes %}checked{% endif %}>
+                            <label class="form-check-label" for="requiere_pasajes">
+                                ¿Requiere gestión de pasajes?
+                            </label>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div class="text-center">
-                <button type="submit" class="btn btn-primary btn-lg">Guardar Cambios</button>
+            <div class="form-section mt-4 text-center">
+                <div class="alert alert-light border-0 bg-light bg-opacity-50 mb-4">
+                    <div class="d-flex">
+                        <div class="me-3 text-primary">
+                            <i class="bi bi-info-circle"></i>
+                        </div>
+                        <div class="text-start">
+                            <p class="mb-0 small">Al guardar los cambios, actualiza toda la información de la reserva y sus participantes.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="{{ url_for('admin.view_reservation', reservation_id=reservation.id) }}" class="btn btn-outline-secondary">
+                        <i class="bi bi-x-circle me-1"></i> Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="bi bi-save me-1"></i> Guardar Cambios
+                    </button>
+                </div>
             </div>
         </form>
     </div>
@@ -206,115 +475,276 @@
 {% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
-    $(document).ready(function() {
-        // Inicializar selector de fechas
-        $('.date-picker').flatpickr({
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM cargado completamente, inicializando script...');
+
+    // Asegurarnos que jQuery está cargado
+    if (typeof jQuery === 'undefined') {
+        console.error('jQuery no está cargado! Los botones no funcionarán correctamente.');
+        return;
+    }
+    
+    $(function() {
+        console.log("jQuery está listo, inicializando eventos...");
+        
+        // Cambiar campos según tipo de reserva
+        $('input[name="reservation_type"]').change(function() {
+            const type = $(this).val();
+            
+            // Mostrar alerta de confirmación
+            if (confirm("Al cambiar el tipo de reserva se resetearán los campos específicos del tipo. Esta acción puede afectar a los participantes. ¿Desea continuar?")) {
+                // Actualizar secciones principales
+                if (type === 'catedra') {
+                    $('#catedraFields').show();
+                    $('#equipoFields').hide();
+                    
+                    // Actualizar campos requeridos
+                    $('#department, #subject').prop('required', true);
+                    $('#project_name, #project_code, #project_director, #activity_sites').prop('required', false);
+                } else {
+                    $('#catedraFields').hide();
+                    $('#equipoFields').show();
+                    
+                    // Actualizar campos requeridos
+                    $('#department, #subject').prop('required', false);
+                    $('#project_name, #project_code, #project_director, #activity_sites').prop('required', true);
+                }
+            } else {
+                // Revertir la selección si el usuario cancela
+                const prevType = type === 'catedra' ? 'equipo' : 'catedra';
+                $(`#type${prevType.charAt(0).toUpperCase() + prevType.slice(1)}`).prop('checked', true);
+                return;
+            }
+        });
+        
+        // Inicializar selectores de fechas
+        $('.date-picker, .date-range-picker').flatpickr({
+            minDate: "today",
             dateFormat: "Y-m-d"
-        });        // Agregar fecha adicional
-        $('#add-date').click(function() {
+        });
+        
+        // Configurar validación para fecha hasta >= fecha desde
+        $('#date_from').on('change', function() {
+            const fromDate = $(this).val();
+            if (fromDate) {
+                $('#date_to').flatpickr({
+                    minDate: fromDate,
+                    dateFormat: "Y-m-d"
+                });
+                
+                // Si ya hay una fecha final seleccionada, verificar que siga siendo válida
+                const toDate = $('#date_to').val();
+                if (toDate && new Date(toDate) < new Date(fromDate)) {
+                    $('#date_to').val(fromDate);
+                    $('#date_to').trigger('change');
+                }
+            }
+        });
+        
+        // ===== MANEJO DE FECHAS PARA PERNOCTAR =====
+        
+        // Agregar fecha para pernoctar
+        $('#add-overnight-date').on('click', function() {
+            console.log("Agregando fecha para pernoctar");
+            
             const dateEntry = `
-                <div class="date-entry row g-3 mb-2">
+                <div class="overnight-date-entry row g-3 mb-2">
                     <div class="col-md-6">
                         <label class="form-label small text-muted">Fecha</label>
                         <div class="input-group">
-                            <span class="input-group-text bg-transparent"><i class="bi bi-calendar"></i></span>
-                            <input type="date" class="form-control date-picker" name="date[]" required>
+                            <span class="input-group-text bg-transparent"><i class="bi bi-calendar-week"></i></span>
+                            <input type="date" class="form-control date-picker" name="overnight_date[]" required>
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label small text-muted">Personas</label>
+                        <label class="form-label small text-muted">Cantidad de personas</label>
                         <div class="input-group">
                             <span class="input-group-text bg-transparent"><i class="bi bi-people"></i></span>
-                            <input type="number" class="form-control num-people" name="num_people[]" min="1" max="12" value="1" required>
+                            <input type="number" class="form-control overnight-num-people" name="overnight_num_people[]" min="1" max="12" value="1" required>
                         </div>
                     </div>
                     <div class="col-md-2 d-flex align-items-end">
-                        <button type="button" class="btn btn-outline-danger remove-date w-100">
-                            <i class="bi bi-trash"></i>
+                        <button type="button" class="btn btn-outline-danger remove-overnight-date w-100">
+                            <i class="bi bi-trash"></i> Eliminar
                         </button>
                     </div>
                 </div>
             `;
-            $('#dates-container').append(dateEntry);
+            
+            $('#overnight-dates-container').append(dateEntry);
             
             // Reinicializar date picker para el nuevo campo
-            $('#dates-container .date-picker').last().flatpickr({
+            $('#overnight-dates-container .date-picker').last().flatpickr({
+                minDate: "today",
                 dateFormat: "Y-m-d"
             });
-        });        // La funcionalidad de eliminar fecha se maneja ahora en el script confirmation.js
-        // El método initRemoveDateButtons() reemplaza este código
-
+        });
+        
+        // Eliminar fecha para pernoctar
+        $(document).on('click', '.remove-overnight-date', function() {
+            if (confirm('¿Está seguro de que desea eliminar esta fecha?')) {
+                $(this).closest('.overnight-date-entry').remove();
+            }
+        });
+        
+        // ===== MANEJO DE FECHAS PARA USO DIURNO =====
+        
+        // Agregar fecha para uso diurno
+        $('#add-day-use-date').on('click', function() {
+            console.log("Agregando fecha para uso diurno");
+            
+            const dateEntry = `
+                <div class="day-use-date-entry row g-3 mb-2">
+                    <div class="col-md-6">
+                        <label class="form-label small text-muted">Fecha</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent"><i class="bi bi-calendar-week"></i></span>
+                            <input type="date" class="form-control date-picker" name="day_use_date[]" required>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small text-muted">Cantidad de personas</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent"><i class="bi bi-people"></i></span>
+                            <input type="number" class="form-control day-use-num-people" name="day_use_num_people[]" min="1" value="1" required>
+                        </div>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="button" class="btn btn-outline-danger remove-day-use-date w-100">
+                            <i class="bi bi-trash"></i> Eliminar
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            $('#day-use-dates-container').append(dateEntry);
+            
+            // Reinicializar date picker para el nuevo campo
+            $('#day-use-dates-container .date-picker').last().flatpickr({
+                minDate: "today",
+                dateFormat: "Y-m-d"
+            });
+        });
+        
+        // Eliminar fecha para uso diurno
+        $(document).on('click', '.remove-day-use-date', function() {
+            if (confirm('¿Está seguro de que desea eliminar esta fecha?')) {
+                $(this).closest('.day-use-date-entry').remove();
+            }
+        });
+        
+        // ===== MANEJO DE PARTICIPANTES =====
+        
         // Agregar participante
-        $('#add-participant').click(function() {
-            const participantHtml = `
+        $('#add-participant').on('click', function() {
+            console.log("Agregando participante");
+            
+            const participantEntry = `
                 <div class="participant-entry card mb-3">
                     <div class="card-body">
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label class="form-label">Nombre y Apellido *</label>
-                                <input type="text" class="form-control" name="participant_name[]" required>
+                                <label class="form-label small text-muted form-required">Nombre y Apellido</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-transparent"><i class="bi bi-person"></i></span>
+                                    <input type="text" class="form-control" name="participant_name[]" required>
+                                </div>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label">DNI/Pasaporte *</label>
-                                <input type="text" class="form-control" name="participant_dni[]" required>
+                                <label class="form-label small text-muted form-required">DNI/Pasaporte</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-transparent"><i class="bi bi-card-text"></i></span>
+                                    <input type="text" class="form-control" name="participant_dni[]" required>
+                                </div>
                             </div>
+                            
                             <div class="col-md-6">
-                                <label class="form-label">Email</label>
-                                <input type="email" class="form-control" name="participant_email[]">
+                                <label class="form-label small text-muted">Cargo/Rol</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-transparent"><i class="bi bi-briefcase"></i></span>
+                                    <input type="text" class="form-control" name="participant_role[]">
+                                </div>
                             </div>
+                            
                             <div class="col-md-6">
-                                <label class="form-label">Teléfono</label>
-                                <input type="text" class="form-control" name="participant_phone[]">
+                                <label class="form-label small text-muted">Nacionalidad</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-transparent"><i class="bi bi-globe"></i></span>
+                                    <input type="text" class="form-control" name="participant_nationality[]">
+                                </div>
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Rol *</label>
-                                <select class="form-select" name="participant_role[]" required>
-                                    <option value="">Seleccionar...</option>
-                                    <option value="docente">Docente</option>
-                                    <option value="estudiante">Estudiante</option>
-                                </select>
+                            
+                            <div class="col-md-12">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="participant_team_member[]">
+                                    <label class="form-check-label">
+                                        Forma parte del equipo del solicitante
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 d-flex justify-content-end">
+                                <button type="button" class="btn btn-outline-danger remove-participant">
+                                    <i class="bi bi-trash"></i> Eliminar participante
+                                </button>
                             </div>
                         </div>
-                        <button type="button" class="btn btn-sm btn-danger mt-3 remove-participant">Eliminar participante</button>
                     </div>
                 </div>
             `;
-            $('#participants-container').append(participantHtml);
-        });        // La funcionalidad de eliminar participante se maneja ahora en el script confirmation.js
-        // El método initRemoveParticipantButtons() reemplaza este código
-
-        // Verificar disponibilidad al cambiar fecha o cantidad de personas
-        $(document).on('change', '.date-picker, .num-people', function() {
-            const dateField = $(this).closest('.date-entry').find('.date-picker');
-            const numPeopleField = $(this).closest('.date-entry').find('.num-people');
             
-            const date = dateField.val();
-            const numPeople = numPeopleField.val();
-            
-            if (date && numPeople) {
-                $.ajax({
-                    url: "{{ url_for('form.check_availability_endpoint') }}",
-                    method: 'POST',
-                    data: {
-                        date: date,
-                        num_people: numPeople,
-                        reservation_id: {{ reservation.id }}  // Para excluir la reserva actual
-                    },
-                    success: function(response) {                        if (!response.available) {
-                            showAlertModal(
-                                'Sin disponibilidad', 
-                                `No hay disponibilidad para ${numPeople} personas en la fecha seleccionada.`,
-                                'Entendido',
-                                'btn-warning'
-                            );
-                            numPeopleField.val(1);
-                        } else {
-                            console.log(`Disponibilidad confirmada. Quedan ${response.remaining} lugares.`);
-                        }
-                    }
-                });
+            $('#participants-container').append(participantEntry);
+        });
+        
+        // Eliminar participante
+        $(document).on('click', '.remove-participant', function() {
+            if (confirm('¿Está seguro de que desea eliminar este participante?')) {
+                $(this).closest('.participant-entry').remove();
             }
         });
+        
+        // Validar el formulario antes de enviar
+        $('#editReservationForm').on('submit', function(e) {
+            // Validar campos requeridos según el tipo seleccionado
+            const reservationType = $('input[name="reservation_type"]:checked').val();
+            
+            if (reservationType === 'catedra') {
+                if (!$('#department').val() || !$('#subject').val()) {
+                    e.preventDefault();
+                    alert('Por favor, complete los campos requeridos para el tipo Cátedra.');
+                    return false;
+                }
+            } else {
+                if (!$('#project_name').val() || !$('#project_code').val() || !$('#project_director').val()) {
+                    e.preventDefault();
+                    alert('Por favor, complete los campos requeridos para el tipo Equipo de Investigación.');
+                    return false;
+                }
+            }
+            
+            // Validar rango de fechas
+            const dateFrom = $('#date_from').val();
+            const dateTo = $('#date_to').val();
+            const dateRangePeople = $('#date_range_people').val();
+            
+            if ((dateFrom || dateTo || dateRangePeople) && !(dateFrom && dateTo && dateRangePeople)) {
+                e.preventDefault();
+                alert('Por favor, complete todos los campos del rango de fechas (desde, hasta y cantidad de personas) o deje todos vacíos.');
+                return false;
+            }
+            
+            // Validar que la fecha final sea posterior o igual a la fecha inicial
+            if (dateFrom && dateTo) {
+                if (new Date(dateTo) < new Date(dateFrom)) {
+                    e.preventDefault();
+                    alert('La fecha final debe ser igual o posterior a la fecha inicial.');
+                    return false;
+                }
+            }
+            
+            return true;
+        });
     });
+});
 </script>
 {% endblock %}
